@@ -12,6 +12,7 @@ public class Certificat implements Serializable{
 	private String cleSignature;//clé publique pour déchiffrer la signature
 	private String cleEcriture;//clé publique pour chiffrer les messages
 	private LocalDate dateFin; //date de péremption
+	private boolean idModifie;
 	
 	
 	//Constructeur
@@ -24,7 +25,8 @@ public class Certificat implements Serializable{
 		this.nom 		  = nom;
 		this.cleEcriture  = cleEcriture;
 		this.cleSignature = cleSignature;
-		this.id = Certification.NB_CERTIFICATS++;
+		this.id = 0;
+		idModifie = false;
 		
 		//Date de fin
 		LocalDate aujourdhui = LocalDate.now();
@@ -52,5 +54,12 @@ public class Certificat implements Serializable{
 	
 	public String toString(){
 		return "#"+id+" : "+nom;
+	}
+	
+	public void setId(int id){
+		if(!idModifie){
+			this.id = id;
+			idModifie = true;
+		}
 	}
 }

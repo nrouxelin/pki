@@ -9,15 +9,16 @@ import java.rmi.server.UnicastRemoteObject;
 public class ServeurCertificationImpl extends UnicastRemoteObject implements ServeurCertification {
 	
 	private Certification certification;
-	
+
 	public ServeurCertificationImpl() throws RemoteException{
 		super();
 		certification = new Certification();
 	}
 
 	@Override
-	public void ajouterCertificat(Certificat c) throws RemoteException, UtilisateurExistantException, ErreurStockageException{
+	public void ajouterCertificat(Certificat c) throws UtilisateurExistantException, ErreurStockageException, IOException{
 		certification.ajouterCertificat(c);
+		certification.enregistrerCertificat(c, true);
 	}
 	@Override
 	public Certificat getCertificatByNom(String nom) throws RemoteException, CertificatNonTrouveException{
@@ -30,14 +31,15 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 	
 	@Override
 	public void revoquerCertificat(int id)
-			throws RemoteException, CertificatNonTrouveException, ErreurStockageException{
+			throws CertificatNonTrouveException, ErreurStockageException, IOException{
 		certification.revoquerCertificat(id);
 	}
 	
 	@Override
 	public void mettreAJourCertificat(int id, Certificat c)
-			throws RemoteException,CertificatNonTrouveException, UtilisateurExistantException, ErreurStockageException{
+			throws CertificatNonTrouveException, UtilisateurExistantException, ErreurStockageException, IOException{
 		certification.mettreAJourCertificat(id, c);
+		certification.enregistrerCertificat(c, true);
 	}
 	
 	public static void main(String[] args){
@@ -52,9 +54,13 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 		}
 	}
 
-	@Override
-	public void enregistrerCertificat(Certificat c, boolean actif) throws IOException {
+/**private void enregistrerCertificat(Certificat c, boolean actif) throws IOException {
 		certification.enregistrerCertificat(c, actif);
+	}**/
+
+	@Override
+	public int getNbCertificats() throws RemoteException {
+		return certification.getNbCertificats();
 	}
 
 }

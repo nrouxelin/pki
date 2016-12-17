@@ -13,14 +13,16 @@ import java.rmi.RemoteException;
  */
 public interface ServeurCertification extends Remote {
 	public void ajouterCertificat(Certificat c)
-			throws RemoteException, UtilisateurExistantException, ErreurStockageException;
+			throws RemoteException, UtilisateurExistantException, ErreurStockageException,IOException;
 	public Certificat getCertificatByNom(String nom)
 			throws RemoteException, CertificatNonTrouveException;
 	public Certification getCertification()
 			throws RemoteException;
 	public void revoquerCertificat(int id)
-			throws RemoteException, CertificatNonTrouveException, ErreurStockageException;
+			throws RemoteException, CertificatNonTrouveException, ErreurStockageException, IOException;
 	public void mettreAJourCertificat(int id, Certificat c)
-			throws RemoteException, CertificatNonTrouveException, UtilisateurExistantException, ErreurStockageException;
-	public void enregistrerCertificat(Certificat c, boolean actif) throws IOException;
+			throws RemoteException, CertificatNonTrouveException, UtilisateurExistantException,
+			ErreurStockageException, IOException;
+	//public void enregistrerCertificat(Certificat c, boolean actif) throws IOException;
+	public int getNbCertificats() throws RemoteException;
 }

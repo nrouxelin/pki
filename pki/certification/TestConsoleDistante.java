@@ -1,5 +1,6 @@
 package pki.certification;
 
+import java.io.File;
 import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -11,16 +12,20 @@ public class TestConsoleDistante {
 	public static void main(String[] args){
 		try {
 			ServeurCertification serveur = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
-			Certificat c = new Certificat("nathan","abc","def");
+			System.out.println(serveur.getNbCertificats());
+			Certificat c = new Certificat("nun","caf","zfg");
 			Certificat c2 = new Certificat("nathan","jui","hit");
+			Certificat c3 = new Certificat("nathan","faez","zggr");
 			serveur.ajouterCertificat(c);
-			System.out.println("Certificat ajouté");
+			serveur.ajouterCertificat(c2);;
 			Certificat nathan = serveur.getCertificatByNom("nathan");
 			System.out.println(nathan.getCleEcriture());
-			serveur.mettreAJourCertificat(nathan.getId(), c2);
+			serveur.mettreAJourCertificat(nathan.getId(), c3);
 			System.out.println(serveur.getCertificatByNom("nathan").getCleEcriture());
-			System.out.println(System.getProperty("user.dir"));
-			serveur.enregistrerCertificat(c2,true);
+			File rep = new File("certificats/actifs/");
+			for(File tmp : rep.listFiles()){
+				System.out.println(tmp);
+			}
 		} catch (AccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -34,8 +39,7 @@ public class TestConsoleDistante {
 			System.out.println("Impossible de trouver le certificat demandé");
 			e.printStackTrace();
 		} catch (UtilisateurExistantException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Impossible d'ajouter un utilisateur existant");
 		} catch (ErreurStockageException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
