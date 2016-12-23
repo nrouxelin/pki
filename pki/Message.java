@@ -1,6 +1,6 @@
 package pki;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import pki.annuaire.Personne;
 
@@ -9,14 +9,14 @@ public class Message implements Serializable {
 
 	private Personne expediteur;
 	private Personne destinataire;
-	private LocalDate date;
+	private LocalDateTime date;
 	private String message;
 	private String signature;
 	
 	public Message(Personne exp, Personne dest){
 		expediteur = exp;
 		destinataire = dest;
-		date = LocalDate.now();
+		date = LocalDateTime.now();
 		message = "";
 		signature ="";
 	}
@@ -24,12 +24,12 @@ public class Message implements Serializable {
 	public Message(Personne exp, Personne dest, String msg, String s){
 		expediteur = exp;
 		destinataire = dest;
-		date = LocalDate.now();
+		date = LocalDateTime.now();
 		message = msg;
 		signature = s;
 	}
 	
-	public Personne getExpditeur(){
+	public Personne getExpediteur(){
 		return expediteur;
 	}
 	
@@ -37,7 +37,7 @@ public class Message implements Serializable {
 		return destinataire;
 	}
 	
-	public LocalDate getDate(){
+	public LocalDateTime getDate(){
 		return date;
 	}
 	
