@@ -6,17 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
@@ -26,15 +25,16 @@ import javax.crypto.NoSuchPaddingException;
 import pki.Chiffrement;
 import pki.Message;
 import pki.annuaire.Personne;
-import pki.exceptions.CertificatNonTrouveException;
-import pki.exceptions.CertificatNonValideException;
-import pki.exceptions.UtilisateurExistantException;
 import pki.annuaire.ServeurAnnuaire;
 import pki.certification.Certificat;
 import pki.certification.ServeurCertification;
+import pki.exceptions.CertificatNonTrouveException;
+import pki.exceptions.CertificatNonValideException;
+import pki.exceptions.UtilisateurExistantException;
 import pki.messagerie.ServeurStockage;
 
-public class Client {
+@SuppressWarnings("serial")
+public class Client implements Serializable{
 
 	private ServeurAnnuaire annuaire;
 	private ServeurStockage messagerie;
@@ -43,6 +43,17 @@ public class Client {
 	private Key cleLecture;
 	private Key cleSignature;
 	
+
+	private class TrousseauCles implements Serializable{
+		public Key cleLecture;
+		public Key cleSignature;
+		
+		public TrousseauCles(Key l, Key s){
+			cleLecture = l;
+			cleSignature = s;
+		}
+	}
+	
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u){
 		annuaire = a;
 		messagerie = m;
@@ -50,13 +61,14 @@ public class Client {
 		utilisateur = u;
 	}
 	
-	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierSignature, File fichierLecture)
+	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierCles)
 			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException,
 			UtilisateurExistantException, CertificatNonValideException{
 		this(a,m,c,u);
-		cleLecture = lireCle(fichierLecture);
-		cleSignature = lireCle(fichierSignature);
+		TrousseauCles cles = lireCles(fichierCles);
+		cleLecture = cles.cleLecture;
+		cleSignature = cles.cleSignature;
 		
 		//Teste l'identité
 		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
@@ -73,18 +85,18 @@ public class Client {
 		}
 	}
 	
-	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierSignature, String nomFichierLecture)
+	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierCles)
 			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException, UtilisateurExistantException,
 			CertificatNonValideException{
-		this(a,m,c,u, new File(nomFichierSignature), new File(nomFichierLecture));
+		this(a,m,c,u, new File(nomFichierCles));
 	}
 	
-	private Key lireCle(File fichier) throws IOException, ClassNotFoundException{
+	private TrousseauCles lireCles(File fichier) throws IOException, ClassNotFoundException{
 		ObjectInputStream flux = new ObjectInputStream(new FileInputStream(fichier));
-		Key cle = (Key) flux.readObject();
+		TrousseauCles trousseau = (TrousseauCles) flux.readObject();
 		flux.close();
-		return cle;
+		return trousseau;
 	}
 	
 	private boolean verifierIdentite(Certificat c) throws RemoteException, CertificatNonTrouveException{
@@ -126,14 +138,8 @@ public class Client {
 			File repertoire = new File(prefixe+nomRepertoire);
 			repertoire.mkdirs();
 			
-			File source = new File(prefixe+"cleLecture.key");
-			File destination = new File(prefixe+nomRepertoire+"cleLecture.key");
-			if(!source.renameTo(destination)){
-				throw new IOException();
-			}
-			
-			source = new File(prefixe+"cleSignature.key");
-			destination = new File(prefixe+nomRepertoire+"cleSignature.key");
+			File source = new File(prefixe+"trousseau.key");
+			File destination = new File(prefixe+nomRepertoire+"trousseau.key");
 			if(!source.renameTo(destination)){
 				throw new IOException();
 			}
@@ -142,12 +148,14 @@ public class Client {
 			//On génère la clé d'écriture
 			KeyPair clesEcriture = Chiffrement.genererClesRSA();
 			cleLecture = clesEcriture.getPrivate();
-			ecrireCle(cleLecture,"cleLecture.key");
 					
 			//On génère la clé de signature
 			KeyPair clesSignature = Chiffrement.genererClesRSA();
 			cleSignature = clesSignature.getPublic();
-			ecrireCle(cleSignature,"cleSignature.key");
+			
+			//Écriture des clés
+			TrousseauCles trousseau = new TrousseauCles(cleLecture,cleSignature);
+			ecrireCles(trousseau,"trousseau.key");
 					
 			//On génère le certificat et on l'ajoute
 			Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
@@ -167,19 +175,21 @@ public class Client {
 		//On génère la clé d'écriture
 		KeyPair clesEcriture = Chiffrement.genererClesRSA();
 		cleLecture = clesEcriture.getPrivate();
-		ecrireCle(cleLecture,"cleLecture.key");
 		
 		//On génère la clé de signature
 		KeyPair clesSignature = Chiffrement.genererClesRSA();
 		cleSignature = clesSignature.getPublic();
-		ecrireCle(cleSignature,"cleSignature.key");
+		
+		//Écriture des clés
+		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic());
+		ecrireCles(trousseau,"trousseau.key");
 		
 		//On génère le certificat et on l'ajoute
 		Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 		certification.ajouterCertificat(c);
 	}
 	
-	private void ecrireCle(Key cle, String nomFichier) throws IOException{
+	private void ecrireCles(TrousseauCles trousseau, String nomFichier) throws IOException{
 		String nomRepertoire = "client/"+utilisateur+"/";
 		nomRepertoire = nomRepertoire.replaceAll("\\s", "_");
 		File repertoire = new File(nomRepertoire);
@@ -188,7 +198,7 @@ public class Client {
 		}
 		File fichier = new File(nomRepertoire+nomFichier);
 		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
-		flux.writeObject(cle);
+		flux.writeObject(trousseau);
 		flux.close();
 	}
 	
@@ -207,7 +217,7 @@ public class Client {
 		if(certificatDestinnataire.getId()!=certification.getCertificatByPersonne(utilisateur).getId()){
 			String nomFichier = "client/"+utilisateur+"/"+certificatDestinnataire.getId()+"/cleLecture.key";
 			nomFichier = nomFichier.replaceAll("\\s", "_");
-			cle = lireCle(new File(nomFichier));
+			cle = lireCles(new File(nomFichier)).cleLecture;
 		}else{
 			cle = cleLecture;
 		}
@@ -230,7 +240,7 @@ public class Client {
 		
 		Client client1;
 		Client client2=null;
-		int mode = 1;
+		int mode = 12;
 		if(mode==1){
 			Certificat c = certification.getCertificatByPersonne(jeanmichel);
 			KeyPair kp = Chiffrement.genererClesRSA();
@@ -241,8 +251,8 @@ public class Client {
 			System.out.println("norbert : "+Chiffrement.verifierSignature(certification.getCertificatByPersonne(norbert), certification.getClePublique()));
 			System.out.println("jm : "+Chiffrement.verifierSignature(certification.getCertificatByPersonne(jeanmichel), certification.getClePublique()));
 
-			client2 = new Client(annuaire, messagerie, certification, jeanmichel, "client/Connard_Jean-Michel/cleSignature.key","client/Connard_Jean-Michel/cleLecture.key");
-			client1 = new Client(annuaire, messagerie, certification, norbert, "client/Gérard_Norbert/cleSignature.key","client/Gérard_Norbert/cleLecture.key");
+			client2 = new Client(annuaire, messagerie, certification, jeanmichel, "client/Connard_Jean-Michel/trousseau.key");
+			client1 = new Client(annuaire, messagerie, certification, norbert, "client/Gérard_Norbert/trousseau.key");
 		}else{
 			client1 = new Client(annuaire, messagerie, certification, norbert);
 			client2 = new Client(annuaire, messagerie, certification, jeanmichel);
