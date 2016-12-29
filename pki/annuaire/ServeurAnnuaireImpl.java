@@ -6,6 +6,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import pki.exceptions.UtilisateurExistantException;
+import pki.exceptions.UtilisateurNonTrouveException;
+
 @SuppressWarnings("serial")
 public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurAnnuaire {
 	
@@ -17,24 +20,24 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 	}
 
 	@Override
-	public void ajouterPersonne(Personne p) throws PersonneExistanteException, IOException {
+	public void ajouterPersonne(Personne p) throws UtilisateurExistantException, IOException {
 		annuaire.ajouterPersonne(p);
 
 	}
 
 	@Override
-	public Personne getPersonne(String nom, String prenom) throws RemoteException, PersonneNonTrouveeException {
+	public Personne getPersonne(String nom, String prenom) throws RemoteException, UtilisateurNonTrouveException {
 		return annuaire.getPersonne(nom, prenom);
 	}
 
 	@Override
-	public void supprimerPersonne(Personne p) throws PersonneNonTrouveeException, IOException {
+	public void supprimerPersonne(Personne p) throws UtilisateurNonTrouveException, IOException {
 		annuaire.supprimerPersonne(p);
 
 	}
 
 	@Override
-	public void supprimerPersonne(String nom, String prenom) throws PersonneNonTrouveeException, IOException {
+	public void supprimerPersonne(String nom, String prenom) throws UtilisateurNonTrouveException, IOException {
 		annuaire.supprimerPersonne(nom, prenom);
 	}
 

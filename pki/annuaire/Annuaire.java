@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import pki.exceptions.UtilisateurExistantException;
+import pki.exceptions.UtilisateurNonTrouveException;
+
 @SuppressWarnings("serial")
 public class Annuaire implements Serializable {
 	
@@ -29,7 +32,7 @@ public class Annuaire implements Serializable {
 				Personne p = new Personne(ligne[0],ligne[1]);
 				try {
 					ajouterPersonne(p);
-				} catch (PersonneExistanteException e) {
+				} catch (UtilisateurExistantException e) {
 					
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -46,13 +49,13 @@ public class Annuaire implements Serializable {
 		initialisation = false;
 	}
 	
-	public Personne getPersonne(String nom, String prenom) throws PersonneNonTrouveeException{
+	public Personne getPersonne(String nom, String prenom) throws UtilisateurNonTrouveException{
 		for(Personne p : annuaire){
 			if(p.getNom().equals(nom) && p.getPrenom().equals(prenom)){
 				return p;
 			}
 		}
-		throw new PersonneNonTrouveeException();
+		throw new UtilisateurNonTrouveException();
 	}
 	
 	private void ecrire(Personne p) throws IOException{
@@ -61,13 +64,13 @@ public class Annuaire implements Serializable {
 		fw.close();
 	}
 	
-	public void ajouterPersonne(Personne p) throws PersonneExistanteException, IOException{
+	public void ajouterPersonne(Personne p) throws UtilisateurExistantException, IOException{
 		try{
 			Personne p1 = getPersonne(p.getNom(),p.getPrenom());
 			if(p1!=null){
-				throw new PersonneExistanteException();
+				throw new UtilisateurExistantException();
 			}
-		}catch(PersonneNonTrouveeException e){
+		}catch(UtilisateurNonTrouveException e){
 			annuaire.add(p);
 			if(!initialisation){
 				ecrire(p);
@@ -75,9 +78,9 @@ public class Annuaire implements Serializable {
 		}
 	}
 	
-	public void supprimerPersonne(Personne p) throws PersonneNonTrouveeException, IOException{
+	public void supprimerPersonne(Personne p) throws UtilisateurNonTrouveException, IOException{
 		if(!annuaire.remove(p)){
-			throw new PersonneNonTrouveeException();
+			throw new UtilisateurNonTrouveException();
 		}else{
 			File f= new File(nomFichier);
 			f.delete();
@@ -87,7 +90,7 @@ public class Annuaire implements Serializable {
 		}
 	}
 	
-	public void supprimerPersonne(String nom, String prenom) throws PersonneNonTrouveeException, IOException{
+	public void supprimerPersonne(String nom, String prenom) throws UtilisateurNonTrouveException, IOException{
 		Personne p = getPersonne(nom,prenom);
 		supprimerPersonne(p);
 	}

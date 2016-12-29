@@ -1,4 +1,4 @@
-package pki.client;
+package pki.exceptions;
 
 public class CertificatNonValideException extends Exception {
 

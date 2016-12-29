@@ -19,6 +19,9 @@ import java.util.ArrayList;
 
 import pki.Chiffrement;
 import pki.annuaire.Personne;
+import pki.exceptions.CertificatNonTrouveException;
+import pki.exceptions.ErreurStockageException;
+import pki.exceptions.UtilisateurExistantException;
 
 /**
  * @author nat

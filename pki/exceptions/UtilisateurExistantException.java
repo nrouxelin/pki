@@ -1,4 +1,4 @@
-package pki.certification;
+package pki.exceptions;
 
 public class UtilisateurExistantException extends Exception {
 

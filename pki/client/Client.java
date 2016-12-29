@@ -27,13 +27,13 @@ import javax.crypto.NoSuchPaddingException;
 import pki.Chiffrement;
 import pki.Message;
 import pki.annuaire.Personne;
-import pki.annuaire.PersonneExistanteException;
+import pki.exceptions.CertificatNonTrouveException;
+import pki.exceptions.CertificatNonValideException;
+import pki.exceptions.ErreurStockageException;
+import pki.exceptions.UtilisateurExistantException;
 import pki.annuaire.ServeurAnnuaire;
 import pki.certification.Certificat;
-import pki.certification.CertificatNonTrouveException;
-import pki.certification.ErreurStockageException;
 import pki.certification.ServeurCertification;
-import pki.certification.UtilisateurExistantException;
 import pki.messagerie.ServeurStockage;
 
 public class Client {
@@ -52,7 +52,10 @@ public class Client {
 		utilisateur = u;
 	}
 	
-	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierSignature, File fichierLecture) throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, CertificatNonTrouveException, ErreurStockageException, PersonneExistanteException, UtilisateurExistantException, CertificatNonValideException{
+	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierSignature, File fichierLecture)
+			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
+			BadPaddingException, CertificatNonTrouveException, ErreurStockageException, UtilisateurExistantException,
+			UtilisateurExistantException, CertificatNonValideException{
 		this(a,m,c,u);
 		cleLecture = lireCle(fichierLecture);
 		cleSignature = lireCle(fichierSignature);
@@ -72,7 +75,7 @@ public class Client {
 		}
 	}
 	
-	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierSignature, String nomFichierLecture) throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, CertificatNonTrouveException, ErreurStockageException, PersonneExistanteException, UtilisateurExistantException, CertificatNonValideException{
+	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierSignature, String nomFichierLecture) throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, CertificatNonTrouveException, ErreurStockageException, UtilisateurExistantException, UtilisateurExistantException, CertificatNonValideException{
 		this(a,m,c,u, new File(nomFichierSignature), new File(nomFichierLecture));
 	}
 	
@@ -157,7 +160,7 @@ public class Client {
 		
 	}
 	
-	public void inscrireUtilisateur() throws PersonneExistanteException, IOException, UtilisateurExistantException, ErreurStockageException{
+	public void inscrireUtilisateur() throws UtilisateurExistantException, IOException, UtilisateurExistantException, ErreurStockageException{
 		annuaire.ajouterPersonne(utilisateur);
 		
 		//On génère la clé d'écriture

@@ -1,4 +1,4 @@
-package pki.certification;
+package pki.exceptions;
 
 public class CertificatNonTrouveException extends Exception {
 	
