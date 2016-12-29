@@ -1,18 +1,23 @@
 package pki.certification;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.security.Key;
+import java.time.LocalDateTime;
+
+import pki.annuaire.Personne;
 
 @SuppressWarnings("serial")
 public class Certificat implements Serializable{
 	
 	//Attribtus
 	private int id;
-	private String nom;//nom de la personne
-	private String cleSignature;//clé publique pour déchiffrer la signature
-	private String cleEcriture;//clé publique pour chiffrer les messages
-	private LocalDate dateFin; //date de péremption
+	private Personne personne;//nom de la personne
+	private Key cleSignature;//clé publique pour déchiffrer la signature
+	private Key cleEcriture;//clé publique pour chiffrer les messages
+	private LocalDateTime dateDebut;
+	private LocalDateTime dateFin; //date de péremption
 	private boolean idModifie;
+	private byte[] signature;
 	
 	
 	//Constructeur
@@ -21,39 +26,42 @@ public class Certificat implements Serializable{
 	 * @param cleSignature clé publique pour déchiffrer la signature
 	 * @param cleEcriture clé publique pour chiffrer les messages
 	 */
-	public Certificat(String nom, String cleSignature, String cleEcriture){
-		this.nom 		  = nom;
+	public Certificat(Personne p, Key cleSignature, Key cleEcriture){
+		this.personne		  = p;
 		this.cleEcriture  = cleEcriture;
 		this.cleSignature = cleSignature;
 		this.id = 0;
 		idModifie = false;
 		
 		//Date de fin
-		LocalDate aujourdhui = LocalDate.now();
-		this.dateFin = aujourdhui.plusYears(1);//le certificat est valable un an
+		dateDebut = LocalDateTime.now();//La validité du certificat commence aujourd'hui
+		this.dateFin = dateDebut.plusYears(1);//le certificat est valable un an
 	}
 	
 	//Getters
-	public String getNom(){
-		return nom;
+	public Personne getPersonne(){
+		return personne;
 	}
 	
-	public String getCleEcriture(){
+	public Key getCleEcriture(){
 		return cleEcriture;
 	}
 	
-	public String getCleSignature(){
+	public Key getCleSignature(){
 		return cleSignature;
 	}
-	public LocalDate getDateFin(){
+	public LocalDateTime getDateFin(){
 		return dateFin;
+	}
+	public LocalDateTime getDateDebut(){
+		return dateDebut;
 	}
 	public int getId(){
 		return id;
 	}
 	
 	public String toString(){
-		return "#"+id+" : "+nom;
+		return "Id:"+id+" : "+personne;
 	}
 	
 	public void setId(int id){
@@ -62,4 +70,17 @@ public class Certificat implements Serializable{
 			idModifie = true;
 		}
 	}
+	
+	public void setDateFin(LocalDateTime date){
+		dateFin = date;
+	}
+	
+	public void setSignature(byte[] s){
+		signature = s;
+	}
+	
+	public byte[] getSignature(){
+		return signature;
+	}
+	
 }

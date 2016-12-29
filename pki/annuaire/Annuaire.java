@@ -37,8 +37,7 @@ public class Annuaire implements Serializable {
 				}
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Fichier non-trouvé -- Création d'un annuaire vide.");
 		}finally{
 			if(fileScanner!=null){
 				fileScanner.close();

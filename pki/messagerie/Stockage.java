@@ -9,14 +9,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.rmi.RemoteException;
+import java.security.Key;
 import java.util.ArrayList;
 
 import pki.Message;
 import pki.annuaire.Personne;
-import pki.annuaire.PersonneNonTrouveeException;
-import pki.annuaire.ServeurAnnuaire;
-import pki.annuaire.ServeurAnnuaireImpl;
 
 @SuppressWarnings("serial")
 public class Stockage implements Serializable {
@@ -73,37 +70,5 @@ public class Stockage implements Serializable {
 		return messages;
 	}
 	
-	public static void main(String[] args) throws PersonneInconnueException{
-		
-		try {
-			ServeurAnnuaire annuaire = new ServeurAnnuaireImpl();
-			Stockage messagerie = new Stockage("msg/");
-			Personne exp = annuaire.getPersonne("Gerard", "Norbert");
-			Personne dest = annuaire.getPersonne("Connard", "Jean-Michel");
-			Message m = new Message(exp,dest,"fzfze","faefa");
-			messagerie.enregistrerMessage(m);
-			System.out.println("Message envoyé");
-			ArrayList<Message> liste = messagerie.getMessages(dest);
-			System.out.println(liste);
-			for(Message m1 : liste){
-				System.out.println(m1);
-			}
-			
-		} catch (PersonneNonTrouveeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 }

@@ -5,14 +5,20 @@ package pki.certification;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.security.Key;
+import java.security.KeyPair;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+
+import pki.Chiffrement;
+import pki.annuaire.Personne;
 
 /**
  * @author nat
@@ -26,6 +32,7 @@ import java.util.ArrayList;
 public class Certification implements Serializable{
 	
 	
+	private KeyPair clesRSA;
 	private ArrayList<Certificat> certificats;
 	/**
 	 * 
@@ -43,7 +50,24 @@ public class Certification implements Serializable{
 	/**
 	 * 
 	 */
-	public Certification(){
+	public Certification(File fichierCles){
+		//Lecture des cles RSA
+		try {
+			clesRSA = lireCles(fichierCles);
+		} catch (ClassNotFoundException | IOException e1) {
+			System.out.println("Génération de nouvelles clés");
+			clesRSA = Chiffrement.genererClesRSA();
+			try {
+				ecrireCles(clesRSA,"certification.keypair");
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		certificats = new ArrayList<Certificat>();
 		certificatsRevoques = new ArrayList<Certificat>();
 		nbCertificats = 0;
@@ -56,11 +80,6 @@ public class Certification implements Serializable{
 					Certificat c = lireCertificat(f);
 					ajouterCertificat(c);
 					
-					//Vérifie si le certificat n'est pas expiré
-					LocalDate aujourdhui = LocalDate.now();
-					if(aujourdhui.isAfter(c.getDateFin())){
-						revoquerCertificat(c.getId());
-					}
 				}
 				}catch(IOException e){
 					e.printStackTrace();
@@ -70,9 +89,6 @@ public class Certification implements Serializable{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ErreurStockageException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (CertificatNonTrouveException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -90,14 +106,32 @@ public class Certification implements Serializable{
 				
 	}
 	
+	public Certification(String nomFichierCles){
+		this(new File(nomFichierCles));
+	}
+	
+	private KeyPair lireCles(File fichier) throws IOException, ClassNotFoundException{
+		ObjectInputStream flux = new ObjectInputStream(new FileInputStream(fichier));
+		KeyPair cle = (KeyPair) flux.readObject();
+		flux.close();
+		return cle;
+	}
+	
+	private void ecrireCles(KeyPair cles, String nomFichier) throws FileNotFoundException, IOException{
+		File fichier = new File("certificats/"+nomFichier);
+		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
+		flux.writeObject(cles);
+		flux.close();
+	}
+	
 	/**
 	 * @param nom
 	 * @return
 	 * @throws CertificatNonTrouveException
 	 */
-	public Certificat getCertificatByNom(String nom) throws CertificatNonTrouveException{
+	public Certificat getCertificatByPersonne(Personne p) throws CertificatNonTrouveException{
 		for(Certificat certif : certificats){
-			if(certif.getNom().equals(nom)){
+			if(certif.getPersonne().equals(p)){
 				return certif;
 			}
 		}
@@ -127,11 +161,12 @@ public class Certification implements Serializable{
 	public void ajouterCertificat(Certificat c)
 			throws UtilisateurExistantException, ErreurStockageException{
 		try{
-			Certificat c1 = getCertificatByNom(c.getNom());
+			Certificat c1 = getCertificatByPersonne(c.getPersonne());
 			if(c1!=null){
 				throw new UtilisateurExistantException();
 			}
 		}catch (CertificatNonTrouveException e){
+			Chiffrement.signerCertificat(c, clesRSA.getPublic());
 			if(!certificats.add(c)){
 				throw new ErreurStockageException();
 			}else{
@@ -172,6 +207,7 @@ public class Certification implements Serializable{
 	public void revoquerCertificat(int id)
 			throws CertificatNonTrouveException,ErreurStockageException, IOException{
 		Certificat c = getCertificatById(id);
+		c.setDateFin(LocalDateTime.now());
 		if(certificats.remove(c)){
 			if(!certificatsRevoques.add(c)){
 				throw new ErreurStockageException();
@@ -199,7 +235,7 @@ public class Certification implements Serializable{
 	public void mettreAJourCertificat(int id, Certificat c)
 			throws CertificatNonTrouveException, UtilisateurExistantException,ErreurStockageException, IOException{
 		Certificat ancienCertificat = getCertificatById(id);
-		if(c.getNom().equals(ancienCertificat.getNom())){
+		if(c.getPersonne().equals(ancienCertificat.getPersonne())){
 			revoquerCertificat(id);
 			ajouterCertificat(c);
 		}
@@ -254,4 +290,21 @@ public class Certification implements Serializable{
 		return nbCertificats;
 	}
 	
+	public Certificat getCertificatByPersonneAndDate(Personne p, LocalDateTime date) throws CertificatNonTrouveException{
+		Certificat actuel = getCertificatByPersonne(p);
+		if(date.isAfter(actuel.getDateDebut()) && actuel.getDateFin().isAfter(date)){
+			return actuel;
+		}else{
+			for(Certificat c : certificatsRevoques){
+				if(c.getPersonne().equals(p) && date.isAfter(c.getDateDebut()) && c.getDateFin().isAfter(date)){
+					return c;
+				}
+			}
+		}
+		throw new CertificatNonTrouveException();
+	}
+	
+	public Key getClePublique(){
+		return clesRSA.getPrivate();
+	}
 }

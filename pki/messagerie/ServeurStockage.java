@@ -11,7 +11,7 @@ import pki.annuaire.Personne;
 
 public interface ServeurStockage extends Remote {
 	public void enregistrerMessage(Message m)
-			throws RemoteException,FileNotFoundException, IOException, PersonneInconnueException;
+			throws RemoteException,FileNotFoundException, IOException;
 	public ArrayList<Message> getMessages(Personne p)
-			throws RemoteException,ClassNotFoundException, IOException;
+			throws RemoteException;
 }

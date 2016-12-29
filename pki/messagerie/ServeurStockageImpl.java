@@ -18,19 +18,23 @@ public class ServeurStockageImpl extends UnicastRemoteObject implements ServeurS
 
 	protected ServeurStockageImpl() throws RemoteException {
 		super();
-		stockage = new Stockage("msg");
+		stockage = new Stockage("msg/");
 	}
 
 	@Override
 	public void enregistrerMessage(Message m)
-			throws RemoteException, FileNotFoundException, IOException, PersonneInconnueException {
+			throws RemoteException, FileNotFoundException, IOException{
 		stockage.enregistrerMessage(m);
 
 	}
 
 	@Override
-	public ArrayList<Message> getMessages(Personne p) throws RemoteException, ClassNotFoundException, IOException {
-		return stockage.getMessages(p);
+	public ArrayList<Message> getMessages(Personne p) throws RemoteException{
+		try {
+			return stockage.getMessages(p);
+		} catch (ClassNotFoundException | IOException e) {
+			return null;
+		}
 
 	}
 	

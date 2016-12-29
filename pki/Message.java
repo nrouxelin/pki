@@ -10,18 +10,17 @@ public class Message implements Serializable {
 	private Personne expediteur;
 	private Personne destinataire;
 	private LocalDateTime date;
-	private String message;
-	private String signature;
+	private byte[] message;
+	private byte[] cle;
+	private byte[] signature;
 	
 	public Message(Personne exp, Personne dest){
 		expediteur = exp;
 		destinataire = dest;
 		date = LocalDateTime.now();
-		message = "";
-		signature ="";
 	}
 	
-	public Message(Personne exp, Personne dest, String msg, String s){
+	public Message(Personne exp, Personne dest, byte[] msg, byte[] s){
 		expediteur = exp;
 		destinataire = dest;
 		date = LocalDateTime.now();
@@ -41,20 +40,28 @@ public class Message implements Serializable {
 		return date;
 	}
 	
-	public String getMessage(){
+	public byte[] getMessage(){
 		return message;
 	}
 	
-	public String getSignature(){
+	public byte[] getSignature(){
 		return signature;
 	}
 	
-	public void setMessage(String msg){
+	public void setMessage(byte[] msg){
 		message = msg;
 	}
 	
-	public void setSignature(String s){
+	public void setSignature(byte[] s){
 		signature = s;
+	}
+	
+	public void setCle(byte[] k){
+		cle = k;
+	}
+	
+	public byte[] getCle(){
+		return cle;
 	}
 	
 	public String toString(){
