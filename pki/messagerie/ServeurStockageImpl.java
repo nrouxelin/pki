@@ -1,6 +1,5 @@
 package pki.messagerie;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -23,7 +22,7 @@ public class ServeurStockageImpl extends UnicastRemoteObject implements ServeurS
 
 	@Override
 	public void enregistrerMessage(Message m)
-			throws RemoteException, FileNotFoundException, IOException{
+			throws RemoteException, IOException{
 		stockage.enregistrerMessage(m);
 
 	}

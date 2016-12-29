@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 import pki.annuaire.Personne;
 import pki.exceptions.CertificatNonTrouveException;
-import pki.exceptions.ErreurStockageException;
 import pki.exceptions.UtilisateurExistantException;
 
 /**
@@ -19,16 +18,14 @@ import pki.exceptions.UtilisateurExistantException;
  *
  */
 public interface ServeurCertification extends Remote {
-	public void ajouterCertificat(Certificat c)
-			throws RemoteException, UtilisateurExistantException, ErreurStockageException,IOException;
+	public boolean ajouterCertificat(Certificat c)
+			throws RemoteException, UtilisateurExistantException, IOException;
 	public Certification getCertification()
 			throws RemoteException;
-	public void revoquerCertificat(int id)
-			throws RemoteException, CertificatNonTrouveException, ErreurStockageException, IOException;
-	public void mettreAJourCertificat(int id, Certificat c)
-			throws RemoteException, CertificatNonTrouveException, UtilisateurExistantException,
-			ErreurStockageException, IOException;
-	//public void enregistrerCertificat(Certificat c, boolean actif) throws IOException;
+	public boolean revoquerCertificat(int id)
+			throws RemoteException, CertificatNonTrouveException, IOException;
+	public boolean mettreAJourCertificat(int id, Certificat c)
+			throws RemoteException, CertificatNonTrouveException, UtilisateurExistantException, IOException;
 	public int getNbCertificats() throws RemoteException;
 	public Certificat getCertificatByPersonne(Personne p) throws RemoteException, CertificatNonTrouveException;
 	public Certificat getCertificatByPersonneAndDate(Personne p, LocalDateTime date) throws RemoteException, CertificatNonTrouveException;

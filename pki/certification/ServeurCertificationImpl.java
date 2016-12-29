@@ -9,8 +9,8 @@ import java.security.Key;
 import java.time.LocalDateTime;
 
 import pki.annuaire.Personne;
+
 import pki.exceptions.CertificatNonTrouveException;
-import pki.exceptions.ErreurStockageException;
 import pki.exceptions.UtilisateurExistantException;
 @SuppressWarnings("serial")
 public class ServeurCertificationImpl extends UnicastRemoteObject implements ServeurCertification {
@@ -23,9 +23,8 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 	}
 
 	@Override
-	public void ajouterCertificat(Certificat c) throws UtilisateurExistantException, ErreurStockageException, IOException{
-		certification.ajouterCertificat(c);
-		certification.enregistrerCertificat(c, true);
+	public boolean ajouterCertificat(Certificat c) throws UtilisateurExistantException, IOException{
+		return certification.ajouterCertificat(c);
 	}
 	@Override
 	public Certificat getCertificatByPersonne(Personne p) throws RemoteException, CertificatNonTrouveException{
@@ -37,16 +36,15 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 	}
 	
 	@Override
-	public void revoquerCertificat(int id)
-			throws CertificatNonTrouveException, ErreurStockageException, IOException{
-		certification.revoquerCertificat(id);
+	public boolean revoquerCertificat(int id)
+			throws CertificatNonTrouveException, IOException{
+		return certification.revoquerCertificat(id);
 	}
 	
 	@Override
-	public void mettreAJourCertificat(int id, Certificat c)
-			throws CertificatNonTrouveException, UtilisateurExistantException, ErreurStockageException, IOException{
-		certification.mettreAJourCertificat(id, c);
-		certification.enregistrerCertificat(c, true);
+	public boolean mettreAJourCertificat(int id, Certificat c)
+			throws CertificatNonTrouveException, UtilisateurExistantException, IOException{
+		return certification.mettreAJourCertificat(id, c);
 	}
 	
 	@Override
@@ -70,10 +68,6 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 			e.printStackTrace();
 		}
 	}
-
-/**private void enregistrerCertificat(Certificat c, boolean actif) throws IOException {
-		certification.enregistrerCertificat(c, actif);
-	}**/
 
 	@Override
 	public int getNbCertificats() throws RemoteException {

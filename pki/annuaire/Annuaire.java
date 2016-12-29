@@ -28,15 +28,18 @@ public class Annuaire implements Serializable {
 		try {
 			fileScanner = new Scanner(fichier);
 			while(fileScanner.hasNextLine()){
-				String[] ligne = fileScanner.nextLine().split(" ");
-				Personne p = new Personne(ligne[0],ligne[1]);
-				try {
-					ajouterPersonne(p);
-				} catch (UtilisateurExistantException e) {
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				String l = fileScanner.nextLine();
+				if(!l.isEmpty()){//Éviter le bug lors de la lecture d'une ligne vide
+					String[] ligne = l.split(" ");
+					Personne p = new Personne(ligne[0],ligne[1]);
+					try {
+						ajouterPersonne(p);
+					} catch (UtilisateurExistantException e) {
+						
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -106,6 +109,10 @@ public class Annuaire implements Serializable {
 	
 	public boolean estInscrit(String nom, String prenom){
 		return estInscrit(new Personne(nom,prenom));
+	}
+	
+	public ArrayList<Personne> getPersonnes(){
+		return annuaire;
 	}
 	
 	@Override

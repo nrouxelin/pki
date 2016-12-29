@@ -3,6 +3,7 @@ package pki.annuaire;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import pki.exceptions.UtilisateurExistantException;
 import pki.exceptions.UtilisateurNonTrouveException;
@@ -15,4 +16,5 @@ public interface ServeurAnnuaire extends Remote {
 	public void supprimerPersonne(String nom, String prenom) throws UtilisateurNonTrouveException, IOException;
 	public boolean estInscrit(Personne p) throws RemoteException;
 	public boolean estInscrit(String nom, String prenom) throws RemoteException;
+	ArrayList<Personne> getPersonnes() throws RemoteException;
 }

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 import pki.exceptions.UtilisateurExistantException;
 import pki.exceptions.UtilisateurNonTrouveException;
@@ -42,6 +43,20 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 	}
 
 	
+	@Override
+	public boolean estInscrit(Personne p) throws RemoteException {
+		return annuaire.estInscrit(p);
+	}
+
+	@Override
+	public boolean estInscrit(String nom, String prenom) throws RemoteException {
+		return annuaire.estInscrit(nom, prenom);
+	}
+	
+	@Override
+	public ArrayList<Personne> getPersonnes() throws RemoteException{
+		return annuaire.getPersonnes();
+	}
 	public static void main(String[] args){
 		try {
 			ServeurAnnuaireImpl serveur = new ServeurAnnuaireImpl();
@@ -54,13 +69,5 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 		}
 	}
 
-	@Override
-	public boolean estInscrit(Personne p) throws RemoteException {
-		return annuaire.estInscrit(p);
-	}
-
-	@Override
-	public boolean estInscrit(String nom, String prenom) throws RemoteException {
-		return annuaire.estInscrit(nom, prenom);
-	}
+	
 }

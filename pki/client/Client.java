@@ -2,7 +2,6 @@ package pki.client;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,7 +28,6 @@ import pki.Message;
 import pki.annuaire.Personne;
 import pki.exceptions.CertificatNonTrouveException;
 import pki.exceptions.CertificatNonValideException;
-import pki.exceptions.ErreurStockageException;
 import pki.exceptions.UtilisateurExistantException;
 import pki.annuaire.ServeurAnnuaire;
 import pki.certification.Certificat;
@@ -54,7 +52,7 @@ public class Client {
 	
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierSignature, File fichierLecture)
 			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
-			BadPaddingException, CertificatNonTrouveException, ErreurStockageException, UtilisateurExistantException,
+			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException,
 			UtilisateurExistantException, CertificatNonValideException{
 		this(a,m,c,u);
 		cleLecture = lireCle(fichierLecture);
@@ -75,7 +73,10 @@ public class Client {
 		}
 	}
 	
-	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierSignature, String nomFichierLecture) throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, CertificatNonTrouveException, ErreurStockageException, UtilisateurExistantException, UtilisateurExistantException, CertificatNonValideException{
+	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierSignature, String nomFichierLecture)
+			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
+			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException, UtilisateurExistantException,
+			CertificatNonValideException{
 		this(a,m,c,u, new File(nomFichierSignature), new File(nomFichierLecture));
 	}
 	
@@ -99,7 +100,7 @@ public class Client {
 		
 	}
 	
-	public void envoyerMessage(Message m, String texte) throws CertificatNonTrouveException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, FileNotFoundException, IOException, CertificatNonValideException{
+	public void envoyerMessage(Message m, String texte) throws CertificatNonTrouveException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException, CertificatNonValideException{
 		if(utilisateur.equals(m.getExpediteur()) && annuaire.estInscrit(m.getDestinataire())){
 
 			Certificat certificatDestinataire = certification.getCertificatByPersonne(m.getDestinataire());
@@ -114,7 +115,7 @@ public class Client {
 		}
 	}
 	
-	private void mettreAJourCertificat(int id) throws RemoteException, ErreurStockageException, IOException{
+	private void mettreAJourCertificat(int id) throws RemoteException, IOException{
 		try {
 			
 			
@@ -160,7 +161,7 @@ public class Client {
 		
 	}
 	
-	public void inscrireUtilisateur() throws UtilisateurExistantException, IOException, UtilisateurExistantException, ErreurStockageException{
+	public void inscrireUtilisateur() throws UtilisateurExistantException, IOException, UtilisateurExistantException{
 		annuaire.ajouterPersonne(utilisateur);
 		
 		//On génère la clé d'écriture
@@ -178,7 +179,7 @@ public class Client {
 		certification.ajouterCertificat(c);
 	}
 	
-	private void ecrireCle(Key cle, String nomFichier) throws FileNotFoundException, IOException{
+	private void ecrireCle(Key cle, String nomFichier) throws IOException{
 		String nomRepertoire = "client/"+utilisateur+"/";
 		nomRepertoire = nomRepertoire.replaceAll("\\s", "_");
 		File repertoire = new File(nomRepertoire);
