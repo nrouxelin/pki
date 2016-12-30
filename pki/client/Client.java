@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -31,6 +30,7 @@ import pki.certification.ServeurCertification;
 import pki.exceptions.CertificatNonTrouveException;
 import pki.exceptions.CertificatNonValideException;
 import pki.exceptions.UtilisateurExistantException;
+import pki.gui.FenetreConnexion;
 import pki.messagerie.ServeurStockage;
 
 @SuppressWarnings("serial")
@@ -54,6 +54,9 @@ public class Client implements Serializable{
 		}
 	}
 	
+	public Client(){
+	}
+
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u){
 		annuaire = a;
 		messagerie = m;
@@ -189,14 +192,7 @@ public class Client implements Serializable{
 		certification.ajouterCertificat(c);
 	}
 	
-	private void ecrireCles(TrousseauCles trousseau, String nomFichier) throws IOException{
-		/*String nomRepertoire = "client/"+utilisateur+"/";
-		nomRepertoire = nomRepertoire.replaceAll("\\s", "_");
-		File repertoire = new File(nomRepertoire);
-		if(!(repertoire.exists() && repertoire.isDirectory())){
-			repertoire.mkdirs();
-		}*/
-		
+	private void ecrireCles(TrousseauCles trousseau, String nomFichier) throws IOException{		
 		File fichier = new File(nomFichier);
 		
 		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
@@ -243,43 +239,14 @@ public class Client implements Serializable{
 		return annuaire;
 	}
 
-	/*public static void main(String[] args) throws Exception{
-		Personne jeanmichel = new Personne("Connard","Jean-Michel");
-		Personne norbert = new Personne("Gérard","Norbert");
+	/**
+	 * Crée un client, lance une fenêtre de connexion et l'affiche.
+	 * @param args
+	 */
+	public static void main(String[] args){
+		Client client = new Client();
 		
-		ServeurCertification certification = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
-		ServeurAnnuaire annuaire = (ServeurAnnuaire)LocateRegistry.getRegistry().lookup("annuaire");
-		ServeurStockage messagerie = (ServeurStockage)LocateRegistry.getRegistry().lookup("stockage");
-
-		
-		
-		Client client1;
-		Client client2=null;
-		int mode = 12;
-		if(mode==1){
-			Certificat c = certification.getCertificatByPersonne(jeanmichel);
-			KeyPair kp = Chiffrement.genererClesRSA();
-			Chiffrement.signerCertificat(c,kp.getPublic());
-			System.out.println(Chiffrement.verifierSignature(c, kp.getPrivate()));
-			
-
-			System.out.println("norbert : "+Chiffrement.verifierSignature(certification.getCertificatByPersonne(norbert), certification.getClePublique()));
-			System.out.println("jm : "+Chiffrement.verifierSignature(certification.getCertificatByPersonne(jeanmichel), certification.getClePublique()));
-
-			client2 = new Client(annuaire, messagerie, certification, jeanmichel, "client/Connard_Jean-Michel/trousseau.key");
-			client1 = new Client(annuaire, messagerie, certification, norbert, "client/Gérard_Norbert/trousseau.key");
-		}else{
-			client1 = new Client(annuaire, messagerie, certification, norbert);
-			client2 = new Client(annuaire, messagerie, certification, jeanmichel);
-			client1.inscrireUtilisateur();
-			client2.inscrireUtilisateur();
-		}
-	
-		Message m = new Message(norbert, jeanmichel);
-		client1.envoyerMessage(m, "Yolo");
-		
-		for(Message recu : client2.getMessages()){
-			System.out.println(recu+" : "+client2.dechiffrerMessage(recu));
-		}
-	}*/
+		FenetreConnexion fenConnex = new FenetreConnexion(client);
+		fenConnex.setVisible(true);
+	}
 }

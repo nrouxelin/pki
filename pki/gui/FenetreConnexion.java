@@ -64,8 +64,11 @@ public class FenetreConnexion extends JFrame {
 	
 	/**
 	 * Constructeur de la fenêtre de connexion
+	 * @param client le client qui devra se connecter ou inscrire
 	 */
-	public FenetreConnexion(){
+	public FenetreConnexion(Client client){
+		this.client = client;
+		
 	    this.setSize(600, 250);
 		this.setTitle("Connexion");
 	    this.setLocationRelativeTo(null);               
@@ -136,14 +139,6 @@ public class FenetreConnexion extends JFrame {
 		this.client = client;
 	}
 	
-	/**
-	 * Lance une fenêtre de connexion et l'affiche.
-	 * @param args
-	 */
-	public static void main(String[] args){
-		FenetreConnexion fenConnex = new FenetreConnexion();
-		fenConnex.setVisible(true);
-	}
 }
 
 /**
