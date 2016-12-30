@@ -68,5 +68,17 @@ public class Stockage implements Serializable {
 		return messages;
 	}
 	
+	public int getNbMessages(Personne destinataire){
+		int nb = 0;
+		
+		String nomDossier = nomRepertoire+destinataire+"/";
+		nomDossier = nomDossier.replaceAll("\\s", "_");
+		File repertoire = new File(nomDossier);
+		
+		if(repertoire.exists() && repertoire.isDirectory()){
+			nb = repertoire.listFiles(filtreExtension).length;
+		}
+		return nb; 
+	}
 	
 }

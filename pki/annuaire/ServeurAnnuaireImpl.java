@@ -69,5 +69,8 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 		}
 	}
 
-	
+	@Override
+	public int getNbPersonnes() throws RemoteException {
+		return annuaire.getNbPersonnes();
+	}	
 }

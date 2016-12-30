@@ -62,6 +62,9 @@ public class FenetreConnexion extends JFrame {
 	//Le client qui a lancé la fenêtre
 	Client client;
 	
+	/**
+	 * Constructeur de la fenêtre de connexion
+	 */
 	public FenetreConnexion(){
 	    this.setSize(600, 250);
 		this.setTitle("Connexion");
@@ -133,6 +136,10 @@ public class FenetreConnexion extends JFrame {
 		this.client = client;
 	}
 	
+	/**
+	 * Lance une fenêtre de connexion et l'affiche.
+	 * @param args
+	 */
 	public static void main(String[] args){
 		FenetreConnexion fenConnex = new FenetreConnexion();
 		fenConnex.setVisible(true);
@@ -209,7 +216,7 @@ class InscriptionListener implements ActionListener{
 	}
 	
 	/**
-	 * Cré l'utilisateur et enregistre une clef si l'utilisateur n'existe pas encore.
+	 * Crée l'utilisateur et enregistre une clef si l'utilisateur n'existe pas encore.
 	 */
 	public void actionPerformed(ActionEvent e) {
 		fenConnex.getSelectFichier().showSaveDialog(null);
@@ -241,25 +248,4 @@ class InscriptionListener implements ActionListener{
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

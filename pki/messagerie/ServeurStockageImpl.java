@@ -49,4 +49,9 @@ public class ServeurStockageImpl extends UnicastRemoteObject implements ServeurS
 		}
 	}
 
+	@Override
+	public int getNbMessages(Personne p) throws RemoteException {
+		return stockage.getNbMessages(p);
+	}
+
 }

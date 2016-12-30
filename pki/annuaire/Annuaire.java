@@ -115,6 +115,10 @@ public class Annuaire implements Serializable {
 		return annuaire;
 	}
 	
+	public int getNbPersonnes(){
+		return annuaire.size();
+	}
+	
 	@Override
 	public String toString(){
 		String res="";

@@ -40,7 +40,6 @@ public class FenetreDiscussion extends JFrame {
 	private JPanel panneauVisualise = new JPanel();
 	private JPanel panneauMenuVisualise = new JPanel();
 	private JComboBox<Message> menuVisualise = new JComboBox<Message>();
-	private JButton boutonRefresh = new JButton("Relever");	
 
 	//Pour envoyer un message
 	private JTextArea messageEnvoie = new JTextArea();
@@ -52,6 +51,10 @@ public class FenetreDiscussion extends JFrame {
 	//Le client qui a lancé la fenêtre
 	Client client;
 
+	/**
+	 * Constructeur de la fenêtre de discussion
+	 * @param client le client qui s'est connecté ou inscrit
+	 */
 	public FenetreDiscussion(Client client){
 		this.client = client;
 
@@ -76,13 +79,6 @@ public class FenetreDiscussion extends JFrame {
 	    	}
 	    });
 	    
-	    //Rafraîchis la liste des messages
-	    boutonRefresh.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		relever();
-	    	}
-	    });
-	    
 	    //Change le message affiché
 	    menuVisualise.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -98,19 +94,19 @@ public class FenetreDiscussion extends JFrame {
 	    		}
 	    	}
 		});
-
-	    relever();
 	    
 	    //panneau pour voir les messages
 	    panneauMenuVisualise.setLayout(new FlowLayout());
-	    panneauMenuVisualise.add(new JLabel("Choix du message à visualiser"));
+	    panneauMenuVisualise.add(new JLabel("Choix du message"));
 	    panneauMenuVisualise.add(menuVisualise);
 
 	    panneauVisualise.setLayout(new BorderLayout());
 	    panneauVisualise.add(panneauMenuVisualise, BorderLayout.NORTH);
 	    panneauVisualise.add(new JScrollPane(messageVisualise), BorderLayout.CENTER);
-	    panneauVisualise.add(boutonRefresh, BorderLayout.SOUTH);
 
+	    //Fix le texte du message visualisé
+	    messageVisualise.setEditable(false);
+	    
 	    //panneau pour envoyer les messages
 	    panneauDestinataire.setLayout(new FlowLayout());
 	    panneauDestinataire.add(new JLabel("Choix du destinataire"));
@@ -133,14 +129,14 @@ public class FenetreDiscussion extends JFrame {
 	private void relever(){
 	    //Rafraîchissement des menus déroulants
 	    try {
-	    	if(menuDestinataire.getItemCount() != client.getAnnuaire().getPersonnes().size()){
+	    	if(menuDestinataire.getItemCount() != client.getAnnuaire().getNbPersonnes()){
 				for(Personne pers : client.getAnnuaire().getPersonnes()){
 					if(((DefaultComboBoxModel<Personne>)menuDestinataire.getModel()).getIndexOf(pers) == -1)
 						menuDestinataire.addItem(pers);
 				}
 	    	}
 	    	
-	    	if(menuVisualise.getItemCount() != client.getMessages().size()){
+	    	if(menuVisualise.getItemCount() != client.getNbMessages()){
 				if(menuVisualise.getItemCount()>0) menuVisualise.removeAllItems();
 				for(Message recu : client.getMessages()){
 					menuVisualise.addItem(recu);
@@ -159,12 +155,12 @@ public class FenetreDiscussion extends JFrame {
 
 		public void run() {
 			while(true){
+				relever();
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				relever();
 			}
 		}
 	}

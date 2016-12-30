@@ -17,4 +17,5 @@ public interface ServeurAnnuaire extends Remote {
 	public boolean estInscrit(Personne p) throws RemoteException;
 	public boolean estInscrit(String nom, String prenom) throws RemoteException;
 	ArrayList<Personne> getPersonnes() throws RemoteException;
+	int getNbPersonnes() throws RemoteException;
 }

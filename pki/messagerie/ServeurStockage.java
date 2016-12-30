@@ -13,4 +13,6 @@ public interface ServeurStockage extends Remote {
 			throws RemoteException, IOException;
 	public ArrayList<Message> getMessages(Personne p)
 			throws RemoteException;
+	public int getNbMessages(Personne p)
+			throws RemoteException;
 }

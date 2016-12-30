@@ -207,7 +207,11 @@ public class Client implements Serializable{
 	public ArrayList<Message> getMessages() throws RemoteException{
 		return messagerie.getMessages(utilisateur);
 	}
-	
+
+	public int getNbMessages() throws RemoteException{
+		return messagerie.getNbMessages(utilisateur);
+	}
+
 	public String dechiffrerMessage(Message m) throws CertificatNonTrouveException, ClassNotFoundException, IOException, CertificatNonValideException{
 		Certificat certificatExpediteur = certification.getCertificatByPersonneAndDate(m.getExpediteur(),m.getDate());
 		Certificat certificatDestinnataire = certification.getCertificatByPersonneAndDate(utilisateur, m.getDate());
