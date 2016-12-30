@@ -50,8 +50,8 @@ public class FenetreConnexion extends JFrame {
 	private JPanel panneauBoutons = new JPanel();
 	
 	//Permet d'entrer les noms et prénoms
-	private JTextField nom = new JTextField("Nom");
-	private JTextField prenom = new JTextField("Prénom");
+	private JTextField nom = new JTextField();
+	private JTextField prenom = new JTextField();
 	private JPanel panneauNom = new JPanel();
 	private JPanel panneauPrenom = new JPanel();
 

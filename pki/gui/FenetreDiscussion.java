@@ -59,7 +59,7 @@ public class FenetreDiscussion extends JFrame {
 		this.client = client;
 
 	    this.setSize(1200, 500);
-		this.setTitle("Discussion");
+		this.setTitle("Discussion - " + client.getUtilisateur());
 	    this.setLocationRelativeTo(null);               
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
