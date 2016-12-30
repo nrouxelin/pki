@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.security.InvalidKeyException;
-import java.security.KeyPair;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -21,10 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import pki.Chiffrement;
 import pki.annuaire.Personne;
 import pki.annuaire.ServeurAnnuaire;
-import pki.certification.Certificat;
 import pki.certification.ServeurCertification;
 import pki.client.Client;
 import pki.exceptions.CertificatNonTrouveException;
@@ -167,24 +164,14 @@ class ConnexionListener implements ActionListener{
 				ServeurStockage messagerie = (ServeurStockage)LocateRegistry.getRegistry().lookup("stockage");
 				
 				Personne utlilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());
-				
-				Certificat c = certification.getCertificatByPersonne(utlilisateur);
-				KeyPair kp = Chiffrement.genererClesRSA();
-				Chiffrement.signerCertificat(c,kp.getPublic());
-				if(Chiffrement.verifierSignature(c, kp.getPrivate()) && 
-						Chiffrement.verifierSignature(certification.getCertificatByPersonne(utlilisateur), certification.getClePublique()))
-				{
-					fenConnex.setClient(new Client(annuaire, messagerie, certification, utlilisateur, 
-							fenConnex.getSelectFichier().getSelectedFile()));
-									
-					FenetreDiscussion fenDisc = new FenetreDiscussion(fenConnex.getClient());
-					fenDisc.setVisible(true);
-					fenConnex.setVisible(false);
 
-				}
-				else{
-					JOptionPane.showMessageDialog(null, "Clef ou noms invalides");
-				}
+				fenConnex.setClient(new Client(annuaire, messagerie, certification, utlilisateur, 
+						fenConnex.getSelectFichier().getSelectedFile()));
+								
+				FenetreDiscussion fenDisc = new FenetreDiscussion(fenConnex.getClient());
+				fenDisc.setVisible(true);
+				fenConnex.setVisible(false);
+
 			}catch (NotBoundException | IOException | InvalidKeyException | ClassNotFoundException | 
 					IllegalBlockSizeException | BadPaddingException | CertificatNonTrouveException | 
 					UtilisateurExistantException | CertificatNonValideException e1) {
