@@ -169,7 +169,7 @@ public class Client implements Serializable{
 		
 	}
 	
-	public void inscrireUtilisateur() throws UtilisateurExistantException, IOException, UtilisateurExistantException{
+	public void inscrireUtilisateur(String nomFichier) throws UtilisateurExistantException, IOException, UtilisateurExistantException{
 		annuaire.ajouterPersonne(utilisateur);
 		
 		//On génère la clé d'écriture
@@ -182,7 +182,7 @@ public class Client implements Serializable{
 		
 		//Écriture des clés
 		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic());
-		ecrireCles(trousseau,"trousseau.key");
+		ecrireCles(trousseau, nomFichier);
 		
 		//On génère le certificat et on l'ajoute
 		Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
@@ -190,13 +190,15 @@ public class Client implements Serializable{
 	}
 	
 	private void ecrireCles(TrousseauCles trousseau, String nomFichier) throws IOException{
-		String nomRepertoire = "client/"+utilisateur+"/";
+		/*String nomRepertoire = "client/"+utilisateur+"/";
 		nomRepertoire = nomRepertoire.replaceAll("\\s", "_");
 		File repertoire = new File(nomRepertoire);
 		if(!(repertoire.exists() && repertoire.isDirectory())){
 			repertoire.mkdirs();
-		}
-		File fichier = new File(nomRepertoire+nomFichier);
+		}*/
+		
+		File fichier = new File(nomFichier);
+		
 		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
 		flux.writeObject(trousseau);
 		flux.close();
@@ -228,7 +230,16 @@ public class Client implements Serializable{
 		}
 	}
 	
-	public static void main(String[] args) throws Exception{
+	//getters
+	public Personne getUtilisateur(){
+		return utilisateur;
+	}
+	
+	public ServeurAnnuaire getAnnuaire(){
+		return annuaire;
+	}
+
+	/*public static void main(String[] args) throws Exception{
 		Personne jeanmichel = new Personne("Connard","Jean-Michel");
 		Personne norbert = new Personne("Gérard","Norbert");
 		
@@ -266,5 +277,5 @@ public class Client implements Serializable{
 		for(Message recu : client2.getMessages()){
 			System.out.println(recu+" : "+client2.dechiffrerMessage(recu));
 		}
-	}
+	}*/
 }
