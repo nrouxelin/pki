@@ -15,6 +15,7 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.UUID;
 
 import javax.crypto.BadPaddingException;
@@ -42,15 +43,20 @@ public class Client implements Serializable{
 	private Personne utilisateur;
 	private Key cleLecture;
 	private Key cleSignature;
+	private Hashtable<Integer, Key> anciennesClesLecture;
+	private String nomFichierTrousseau;
 	
 
 	private class TrousseauCles implements Serializable{
 		public Key cleLecture;
 		public Key cleSignature;
+		public Hashtable<Integer, Key> anciennesClesLecture;
 		
-		public TrousseauCles(Key l, Key s){
+		public TrousseauCles(Key l, Key s, Hashtable<Integer,Key> anciennesCles){
 			cleLecture = l;
 			cleSignature = s;
+			
+			anciennesClesLecture = anciennesCles;
 		}
 	}
 	
@@ -69,15 +75,19 @@ public class Client implements Serializable{
 			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException,
 			UtilisateurExistantException, CertificatNonValideException{
 		this(a,m,c,u);
+		nomFichierTrousseau = fichierCles.getName();
 		TrousseauCles cles = lireCles(fichierCles);
 		cleLecture = cles.cleLecture;
 		cleSignature = cles.cleSignature;
+		if(cles.anciennesClesLecture != null){
+			anciennesClesLecture = cles.anciennesClesLecture;
+		}else{
+			anciennesClesLecture = new Hashtable<Integer, Key>();
+		}
+		
 		
 		//Teste l'identité
 		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
-		if(!Chiffrement.verifierSignature(certificat, certification.getClePublique())){
-			//throw new CertificatNonValideException();
-		}
 		if(verifierIdentite(certificat)){
 			LocalDateTime aujourdhui = LocalDateTime.now();
 			if(aujourdhui.isAfter(certificat.getDateFin())){
@@ -119,10 +129,6 @@ public class Client implements Serializable{
 		if(utilisateur.equals(m.getExpediteur()) && annuaire.estInscrit(m.getDestinataire())){
 
 			Certificat certificatDestinataire = certification.getCertificatByPersonne(m.getDestinataire());
-			if(!Chiffrement.verifierSignature(certificatDestinataire, certification.getClePublique())){
-				//throw new CertificatNonValideException();
-			}
-			
 			Chiffrement.chiffrerMessage(m, texte, certificatDestinataire.getCleEcriture());
 			Chiffrement.signerMessage(m, cleSignature);
 			
@@ -135,17 +141,7 @@ public class Client implements Serializable{
 			
 			
 			//on enregistre les anciennes clés
-			String prefixe = "client/"+utilisateur+"/";
-			prefixe = prefixe.replaceAll("\\s", "_");
-			String nomRepertoire = id+"/";
-			File repertoire = new File(prefixe+nomRepertoire);
-			repertoire.mkdirs();
-			
-			File source = new File(prefixe+"trousseau.key");
-			File destination = new File(prefixe+nomRepertoire+"trousseau.key");
-			if(!source.renameTo(destination)){
-				throw new IOException();
-			}
+			anciennesClesLecture.put(id,cleLecture);
 			
 			certification.revoquerCertificat(id);
 			//On génère la clé d'écriture
@@ -157,8 +153,8 @@ public class Client implements Serializable{
 			cleSignature = clesSignature.getPublic();
 			
 			//Écriture des clés
-			TrousseauCles trousseau = new TrousseauCles(cleLecture,cleSignature);
-			ecrireCles(trousseau,"trousseau.key");
+			TrousseauCles trousseau = new TrousseauCles(cleLecture,cleSignature,anciennesClesLecture);
+			ecrireCles(trousseau,nomFichierTrousseau);
 					
 			//On génère le certificat et on l'ajoute
 			Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
@@ -184,7 +180,7 @@ public class Client implements Serializable{
 		cleSignature = clesSignature.getPublic();
 		
 		//Écriture des clés
-		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic());
+		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic(),anciennesClesLecture);
 		ecrireCles(trousseau, nomFichier);
 		
 		//On génère le certificat et on l'ajoute
@@ -211,15 +207,9 @@ public class Client implements Serializable{
 	public String dechiffrerMessage(Message m) throws CertificatNonTrouveException, ClassNotFoundException, IOException, CertificatNonValideException{
 		Certificat certificatExpediteur = certification.getCertificatByPersonneAndDate(m.getExpediteur(),m.getDate());
 		Certificat certificatDestinnataire = certification.getCertificatByPersonneAndDate(utilisateur, m.getDate());
-		if(!(Chiffrement.verifierSignature(certificatExpediteur, certification.getClePublique()) && 
-				Chiffrement.verifierSignature(certificatDestinnataire, certification.getClePublique()))){
-			//throw new CertificatNonValideException();
-		}
 		Key cle;
 		if(certificatDestinnataire.getId()!=certification.getCertificatByPersonne(utilisateur).getId()){
-			String nomFichier = "client/"+utilisateur+"/"+certificatDestinnataire.getId()+"/cleLecture.key";
-			nomFichier = nomFichier.replaceAll("\\s", "_");
-			cle = lireCles(new File(nomFichier)).cleLecture;
+			cle = anciennesClesLecture.get(certificatDestinnataire.getId());
 		}else{
 			cle = cleLecture;
 		}

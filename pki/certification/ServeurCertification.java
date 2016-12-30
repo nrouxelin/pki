@@ -6,7 +6,6 @@ package pki.certification;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.security.Key;
 import java.time.LocalDateTime;
 
 import pki.annuaire.Personne;
@@ -29,5 +28,4 @@ public interface ServeurCertification extends Remote {
 	public int getNbCertificats() throws RemoteException;
 	public Certificat getCertificatByPersonne(Personne p) throws RemoteException, CertificatNonTrouveException;
 	public Certificat getCertificatByPersonneAndDate(Personne p, LocalDateTime date) throws RemoteException, CertificatNonTrouveException;
-	public Key getClePublique() throws RemoteException;
 }

@@ -17,7 +17,6 @@ public class Certificat implements Serializable{
 	private LocalDateTime dateDebut;
 	private LocalDateTime dateFin; //date de péremption
 	private boolean idModifie;
-	private byte[] signature;
 	
 	
 	//Constructeur
@@ -73,14 +72,6 @@ public class Certificat implements Serializable{
 	
 	public void setDateFin(LocalDateTime date){
 		dateFin = date;
-	}
-	
-	public void setSignature(byte[] s){
-		signature = s;
-	}
-	
-	public byte[] getSignature(){
-		return signature;
 	}
 	
 }

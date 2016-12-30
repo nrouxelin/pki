@@ -5,36 +5,24 @@ package pki.certification;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.security.Key;
-import java.security.KeyPair;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import pki.Chiffrement;
 import pki.annuaire.Personne;
 import pki.exceptions.CertificatNonTrouveException;
 import pki.exceptions.UtilisateurExistantException;
 
-/**
- * @author nat
- *
- */
-/**
- * @author nat
- *
- */
+
 @SuppressWarnings("serial")
 public class Certification implements Serializable{
 	
 	
-	private KeyPair clesRSA;
 	private ArrayList<Certificat> certificats;
 	private ArrayList<Certificat> certificatsRevoques;
 	private int nbCertificats;
@@ -50,24 +38,8 @@ public class Certification implements Serializable{
 	/**
 	 * 
 	 */
-	public Certification(File fichierCles){
-		//Lecture des cles RSA
-		try {
-			clesRSA = lireCles(fichierCles);
-		} catch (ClassNotFoundException | IOException e1) {
-			System.out.println("Génération de nouvelles clés");
-			clesRSA = Chiffrement.genererClesRSA();
-			try {
-				ecrireCles(clesRSA,"certification.keypair");
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
+	public Certification(){
+
 		certificats = new ArrayList<Certificat>();
 		certificatsRevoques = new ArrayList<Certificat>();
 		nbCertificats = 0;
@@ -105,23 +77,6 @@ public class Certification implements Serializable{
 				
 	}
 	
-	public Certification(String nomFichierCles){
-		this(new File(nomFichierCles));
-	}
-	
-	private KeyPair lireCles(File fichier) throws IOException, ClassNotFoundException{
-		ObjectInputStream flux = new ObjectInputStream(new FileInputStream(fichier));
-		KeyPair cle = (KeyPair) flux.readObject();
-		flux.close();
-		return cle;
-	}
-	
-	private void ecrireCles(KeyPair cles, String nomFichier) throws FileNotFoundException, IOException{
-		File fichier = new File("certificats/"+nomFichier);
-		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
-		flux.writeObject(cles);
-		flux.close();
-	}
 	
 	/**
 	 * @param nom
@@ -165,7 +120,6 @@ public class Certification implements Serializable{
 				throw new UtilisateurExistantException();
 			}
 		}catch (CertificatNonTrouveException e){
-			Chiffrement.signerCertificat(c, clesRSA.getPublic());
 			if(!certificats.add(c)){
 				return false;
 			}else{
@@ -259,6 +213,14 @@ public class Certification implements Serializable{
 		}else{
 			dossier = "certificats/revoques/";
 		}
+		
+		//On vérifie que les dossiers nécessaires existent, si besoin on les créée
+		File repertoire = new File(dossier);
+		if(!(repertoire.exists() && repertoire.isDirectory())){
+			repertoire.mkdirs();
+		}
+		
+		//on enregistre le certificat
 		File fichier = new File(dossier+c.getId()+".dat");
 		ObjectOutputStream flux = new ObjectOutputStream(new FileOutputStream(fichier));
 		flux.writeObject(c);
@@ -314,7 +276,4 @@ public class Certification implements Serializable{
 		throw new CertificatNonTrouveException();
 	}
 	
-	public Key getClePublique(){
-		return clesRSA.getPrivate();
-	}
 }

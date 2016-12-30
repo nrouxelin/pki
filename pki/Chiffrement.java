@@ -115,15 +115,6 @@ public final class Chiffrement {
 		}
 	}
 	
-	public static void signerCertificat(Certificat c, Key cleRSA){
-		try {
-			byte[] digest = MessageDigest.getInstance("SHA1").digest(c.toString().getBytes("UTF-8"));
-			c.setSignature(chiffrerRSA(digest,cleRSA));
-			
-		} catch (NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
-		e.printStackTrace();
-		}
-	}
 	
 	public static Boolean verifierSignature(Message m, Key cleRSA){
 		try {
@@ -132,18 +123,6 @@ public final class Chiffrement {
 			return MessageDigest.isEqual(signature, digest);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
 				| BadPaddingException e) {
-			return false;
-		}
-	}
-	
-	public static Boolean verifierSignature(Certificat c, Key cleRSA){
-		try {
-			byte[] signature = dechiffrerRSA(c.getSignature(),cleRSA);
-			byte[] digest = MessageDigest.getInstance("SHA1").digest(c.toString().getBytes("UTF-8"));
-			return MessageDigest.isEqual(signature, digest);
-		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
-				| BadPaddingException | UnsupportedEncodingException e) {
-			e.printStackTrace();
 			return false;
 		}
 	}

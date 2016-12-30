@@ -5,7 +5,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.Key;
 import java.time.LocalDateTime;
 
 import pki.annuaire.Personne;
@@ -19,7 +18,7 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 
 	public ServeurCertificationImpl() throws RemoteException{
 		super();
-		certification = new Certification("certificats/certification.keypair");
+		certification = new Certification();
 	}
 
 	@Override
@@ -52,10 +51,6 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 		return certification.getCertificatByPersonneAndDate(p, date);
 	}
 	
-	@Override
-	public Key getClePublique() throws RemoteException{
-		return certification.getClePublique();
-	}
 	
 	public static void main(String[] args){
 		try {
