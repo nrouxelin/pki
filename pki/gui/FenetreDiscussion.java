@@ -86,14 +86,16 @@ public class FenetreDiscussion extends JFrame {
 	    //Change le message affiché
 	    menuVisualise.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		try {
-					messageVisualise.setText(client.dechiffrerMessage((Message) menuVisualise.getSelectedItem()));
-				} catch (ClassNotFoundException | CertificatNonTrouveException | IOException
-						| CertificatNonValideException e1) {
-					
-					JOptionPane.showMessageDialog(null, "Problème au déchifrage");
-					e1.printStackTrace();
-				}
+	    		if(menuVisualise.getSelectedItem() != null){
+		    		try {
+						messageVisualise.setText(client.dechiffrerMessage((Message) menuVisualise.getSelectedItem()));
+					} catch (ClassNotFoundException | CertificatNonTrouveException | IOException
+							| CertificatNonValideException e1) {
+						
+						JOptionPane.showMessageDialog(null, "Problème au déchifrage");
+						e1.printStackTrace();
+					}
+	    		}
 	    	}
 		});
 
@@ -122,23 +124,48 @@ public class FenetreDiscussion extends JFrame {
 	    this.getContentPane().setLayout(new GridLayout(1, 2));
 	    this.getContentPane().add(panneauEnvoie);
 	    this.getContentPane().add(panneauVisualise);
+	    
+	    //lancement du thread permettant de relever les messages régulièremenr
+	    Thread t = new Thread(new ThreadRelever());
+	    t.start();
 	}
 	
 	private void relever(){
 	    //Rafraîchissement des menus déroulants
 	    try {
-			for(Personne pers : client.getAnnuaire().getPersonnes()){
-				if(((DefaultComboBoxModel<Personne>)menuDestinataire.getModel()).getIndexOf(pers) == -1)
-					menuDestinataire.addItem(pers);
-			}
-			if(menuVisualise.getItemCount()>0) menuVisualise.removeAllItems();
-			for(Message recu : client.getMessages()){
-				if((true)&&((DefaultComboBoxModel<Message>)menuVisualise.getModel()).getIndexOf(recu) == -1)
+	    	if(menuDestinataire.getItemCount() != client.getAnnuaire().getPersonnes().size()){
+				for(Personne pers : client.getAnnuaire().getPersonnes()){
+					if(((DefaultComboBoxModel<Personne>)menuDestinataire.getModel()).getIndexOf(pers) == -1)
+						menuDestinataire.addItem(pers);
+				}
+	    	}
+	    	
+	    	if(menuVisualise.getItemCount() != client.getMessages().size()){
+				if(menuVisualise.getItemCount()>0) menuVisualise.removeAllItems();
+				for(Message recu : client.getMessages()){
 					menuVisualise.addItem(recu);
-			}
+				}
+	    	}
 		} catch (RemoteException e1) {
-			JOptionPane.showMessageDialog(null, "Problème de connexion");
+			JOptionPane.showMessageDialog(null, "Problème de récupération des données");
 			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * thread pour le chargement des messages à interval régulier
+	 */
+	class ThreadRelever implements Runnable{
+
+		public void run() {
+			while(true){
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				relever();
+			}
 		}
 	}
 }
