@@ -1,8 +1,3 @@
-/**
- * FenetreConnexion.java
- * Fenêtre avec permettant de s'identifier ou de créer un nouvel utilisateur.
- * Lance automatiquement la fenêtre de discussion une fois cette étape effectuée.
- */
 package pki.gui;
 
 import java.awt.Dimension;
@@ -146,7 +141,7 @@ public class FenetreConnexion extends JFrame {
 
 /**
  * ActionListener pour le bouton de connexion
- * Contrôl de la fenêtre de connexion et du client
+ * Contrôle de la fenêtre de connexion et du client
  */
 class ConnexionListener implements ActionListener{
 	private FenetreConnexion fenConnex;
@@ -159,9 +154,10 @@ class ConnexionListener implements ActionListener{
 		this.fenConnex = fenConnex;
 	}
 	
-	
+	/**
+	 * Connecte et lance la fenêtre de discussion si le fichier est valide
+	 */
 	public void actionPerformed(ActionEvent e){
-		//Connecte et lance la fenêtre de discussion si le fichier est valide
 		if(fenConnex.getSelectFichier().getSelectedFile() != null){
 			try {
 				ServeurCertification certification = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
@@ -197,7 +193,10 @@ class ConnexionListener implements ActionListener{
 	}
 }
 
-
+/**
+ * ActionListener pour le bouton d'inscription
+ * Contrôle de la fenêtre de connexion et du client
+ */
 class InscriptionListener implements ActionListener{
 	private FenetreConnexion fenConnex;
 	
@@ -209,9 +208,10 @@ class InscriptionListener implements ActionListener{
 		this.fenConnex = fenConnex;
 	}
 	
+	/**
+	 * Cré l'utilisateur et enregistre une clef si l'utilisateur n'existe pas encore.
+	 */
 	public void actionPerformed(ActionEvent e) {
-		//Gestion déjà inscrit UtilisateurExistantException
-		
 		fenConnex.getSelectFichier().showSaveDialog(null);
 		if(fenConnex.getSelectFichier().getSelectedFile() != null){
 			Personne utlilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());

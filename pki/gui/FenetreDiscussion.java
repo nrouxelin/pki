@@ -1,6 +1,3 @@
-/**
- * 
- */
 package pki.gui;
 
 import java.awt.BorderLayout;
@@ -31,7 +28,8 @@ import pki.exceptions.CertificatNonTrouveException;
 import pki.exceptions.CertificatNonValideException;
 
 /**
- * @author Meuleman
+ * Fenetre contennant une zone de text pour écrire, une pour visualiser les messages reçus
+ * et des menus déroulants pour le choix des destinataires ou des messages
  *
  */
 @SuppressWarnings("serial")
@@ -62,7 +60,7 @@ public class FenetreDiscussion extends JFrame {
 	    this.setLocationRelativeTo(null);               
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	    
+	    //Envoie le message
 	    boutonEnvoie.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Message m = new Message(client.getUtilisateur(), (Personne) menuDestinataire.getSelectedItem());
@@ -78,12 +76,14 @@ public class FenetreDiscussion extends JFrame {
 	    	}
 	    });
 	    
+	    //Rafraîchis la liste des messages
 	    boutonRefresh.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		relever();
 	    	}
 	    });
 	    
+	    //Change le message affiché
 	    menuVisualise.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		try {
@@ -131,8 +131,9 @@ public class FenetreDiscussion extends JFrame {
 				if(((DefaultComboBoxModel<Personne>)menuDestinataire.getModel()).getIndexOf(pers) == -1)
 					menuDestinataire.addItem(pers);
 			}
+			if(menuVisualise.getItemCount()>0) menuVisualise.removeAllItems();
 			for(Message recu : client.getMessages()){
-				if(((DefaultComboBoxModel<Message>)menuVisualise.getModel()).getIndexOf(recu) == -1)
+				if((true)&&((DefaultComboBoxModel<Message>)menuVisualise.getModel()).getIndexOf(recu) == -1)
 					menuVisualise.addItem(recu);
 			}
 		} catch (RemoteException e1) {
