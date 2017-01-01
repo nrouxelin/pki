@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import pki.annuaire.Personne;
 import pki.client.Client;
 import pki.exceptions.CertificatNonTrouveException;
+import pki.exceptions.CertificatNonValideException;
 import pki.exceptions.UtilisateurExistantException;
 
 /**
@@ -162,6 +163,10 @@ class ConnexionListener implements ActionListener{
 			}catch (NotBoundException | IOException | ClassNotFoundException | 
 					CertificatNonTrouveException e1) {
 				JOptionPane.showMessageDialog(null, "Problème de connexion");
+				e1.printStackTrace();
+			}
+			catch (CertificatNonValideException e1) {
+				JOptionPane.showMessageDialog(null, "Certificat non valide");
 				e1.printStackTrace();
 			}
 		}

@@ -177,7 +177,6 @@ public class Client implements Serializable{
 			Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 			certification.ajouterCertificat(c);
 		} catch (CertificatNonTrouveException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UtilisateurExistantException e) {
 		}
@@ -248,9 +247,10 @@ public class Client implements Serializable{
 	 * @throws ClassNotFoundException
 	 * @throws IOException
 	 * @throws CertificatNonTrouveException
+	 * @throws CertificatNonValideException 
 	 */
 	public void connexion(Personne u, File fichierCles) 
-			throws NotBoundException, ClassNotFoundException, IOException, CertificatNonTrouveException{
+			throws NotBoundException, ClassNotFoundException, IOException, CertificatNonTrouveException, CertificatNonValideException{
 		
 		utilisateur = u;
 		
