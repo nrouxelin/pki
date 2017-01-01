@@ -273,7 +273,7 @@ public class Client implements Serializable{
 				mettreAJourCertificat(certificat.getId());
 			}
 		}else{
-		//	throw new CertificatNonValideException();
+			throw new CertificatNonValideException();
 		}
 	}
 		
