@@ -192,10 +192,8 @@ class InscriptionListener implements ActionListener{
 			Personne utilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());
 
 			try {
-			
-			fenConnex.getClient().setUtilisateur(utilisateur);
-			
-			fenConnex.getClient().inscrireUtilisateur(fenConnex.getSelectFichier().getSelectedFile().getAbsolutePath());
+						
+			fenConnex.getClient().inscrireUtilisateur(utilisateur, fenConnex.getSelectFichier().getSelectedFile().getAbsolutePath());
 
 			
 			FenetreDiscussion fenDisc = new FenetreDiscussion(fenConnex.getClient());

@@ -185,7 +185,9 @@ public class Client implements Serializable{
 		
 	}
 	
-	public void inscrireUtilisateur(String nomFichier) throws UtilisateurExistantException, IOException, UtilisateurExistantException{
+	public void inscrireUtilisateur(Personne u, String nomFichier) throws UtilisateurExistantException, IOException, UtilisateurExistantException{
+		utilisateur = u;
+		
 		annuaire.ajouterPersonne(utilisateur);
 		
 		//On génère la clé d'écriture
@@ -282,11 +284,6 @@ public class Client implements Serializable{
 	
 	public ServeurAnnuaire getAnnuaire(){
 		return annuaire;
-	}
-
-	//setters
-	public void setUtilisateur(Personne u){
-		utilisateur = u;
 	}
 	
 	/**
