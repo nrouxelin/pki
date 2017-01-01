@@ -42,7 +42,7 @@ public class FenetreDiscussion extends JFrame {
 	private JComboBox<Message> menuVisualise = new JComboBox<Message>();
 
 	//Pour envoyer un message
-	private JTextArea messageEnvoie = new JTextArea();
+	private JTextArea messageSaisie = new JTextArea();
 	private JComboBox<Personne> menuDestinataire = new JComboBox<Personne>();
 	private JPanel panneauDestinataire = new JPanel();
 	private JPanel panneauEnvoie = new JPanel();
@@ -63,19 +63,19 @@ public class FenetreDiscussion extends JFrame {
 	    this.setLocationRelativeTo(null);               
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	    //Envoie le message
+	    //Envoie le message et nettoie la zone de saisi
 	    boutonEnvoie.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Message m = new Message(client.getUtilisateur(), (Personne) menuDestinataire.getSelectedItem());
 	    		try {
-					client.envoyerMessage(m, messageEnvoie.getText());
+					client.envoyerMessage(m, messageSaisie.getText());
+		    		messageSaisie.setText("");
 				} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
 						| CertificatNonTrouveException | IOException | CertificatNonValideException e1) {
 
 					JOptionPane.showMessageDialog(null, "Problème lors de l'envoie du message");
 					e1.printStackTrace();
 				}
-	    		messageEnvoie.setText("");
 	    	}
 	    });
 	    
@@ -114,7 +114,7 @@ public class FenetreDiscussion extends JFrame {
 	    
 	    panneauEnvoie.setLayout(new BorderLayout());
 	    panneauEnvoie.add(panneauDestinataire, BorderLayout.NORTH);
-	    panneauEnvoie.add(new JScrollPane(messageEnvoie), BorderLayout.CENTER);
+	    panneauEnvoie.add(new JScrollPane(messageSaisie), BorderLayout.CENTER);
 	    panneauEnvoie.add(boutonEnvoie, BorderLayout.SOUTH);
 	    
 	    this.getContentPane().setLayout(new GridLayout(1, 2));
@@ -126,6 +126,9 @@ public class FenetreDiscussion extends JFrame {
 	    t.start();
 	}
 	
+	/**
+	 * Met à jours les menus déroulants pour pouvoir choisir les derniers messages envoyés et destinataires créés
+	 */
 	private void relever(){
 	    //Rafraîchissement des menus déroulants
 	    try {

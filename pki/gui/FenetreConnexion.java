@@ -6,11 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.rmi.NotBoundException;
-import java.rmi.registry.LocateRegistry;
-import java.security.InvalidKeyException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -21,13 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import pki.annuaire.Personne;
-import pki.annuaire.ServeurAnnuaire;
-import pki.certification.ServeurCertification;
 import pki.client.Client;
 import pki.exceptions.CertificatNonTrouveException;
-import pki.exceptions.CertificatNonValideException;
 import pki.exceptions.UtilisateurExistantException;
-import pki.messagerie.ServeurStockage;
 
 /**
  * Fenêtre avec permettant de s'identifier ou de créer un nouvel utilisateur.
@@ -158,23 +150,17 @@ class ConnexionListener implements ActionListener{
 	 */
 	public void actionPerformed(ActionEvent e){
 		if(fenConnex.getSelectFichier().getSelectedFile() != null){
-			try {
-				ServeurCertification certification = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
-				ServeurAnnuaire annuaire = (ServeurAnnuaire)LocateRegistry.getRegistry().lookup("annuaire");
-				ServeurStockage messagerie = (ServeurStockage)LocateRegistry.getRegistry().lookup("stockage");
-				
-				Personne utlilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());
-
-				fenConnex.setClient(new Client(annuaire, messagerie, certification, utlilisateur, 
-						fenConnex.getSelectFichier().getSelectedFile()));
+			try {				
+				fenConnex.getClient().connexion(
+						new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText()), 
+						fenConnex.getSelectFichier().getSelectedFile());
 								
 				FenetreDiscussion fenDisc = new FenetreDiscussion(fenConnex.getClient());
 				fenDisc.setVisible(true);
 				fenConnex.setVisible(false);
 
-			}catch (NotBoundException | IOException | InvalidKeyException | ClassNotFoundException | 
-					IllegalBlockSizeException | BadPaddingException | CertificatNonTrouveException | 
-					UtilisateurExistantException | CertificatNonValideException e1) {
+			}catch (NotBoundException | IOException | ClassNotFoundException | 
+					CertificatNonTrouveException e1) {
 				JOptionPane.showMessageDialog(null, "Problème de connexion");
 				e1.printStackTrace();
 			}
@@ -203,15 +189,11 @@ class InscriptionListener implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		fenConnex.getSelectFichier().showSaveDialog(null);
 		if(fenConnex.getSelectFichier().getSelectedFile() != null){
-			Personne utlilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());
+			Personne utilisateur = new Personne(fenConnex.getNom().getText(), fenConnex.getPrenom().getText());
 
 			try {
-			ServeurCertification certification = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
-			ServeurAnnuaire annuaire = (ServeurAnnuaire)LocateRegistry.getRegistry().lookup("annuaire");
-			ServeurStockage messagerie = (ServeurStockage)LocateRegistry.getRegistry().lookup("stockage");
-
 			
-			fenConnex.setClient(new Client(annuaire, messagerie, certification, utlilisateur));
+			fenConnex.getClient().setUtilisateur(utilisateur);
 			
 			fenConnex.getClient().inscrireUtilisateur(fenConnex.getSelectFichier().getSelectedFile().getAbsolutePath());
 
@@ -220,11 +202,11 @@ class InscriptionListener implements ActionListener{
 			fenDisc.setVisible(true);
 			fenConnex.setVisible(false);
 
-			} catch (IOException | NotBoundException e1) {
+			} catch (IOException e1) {
 				JOptionPane.showMessageDialog(null, "Problème d'inscription");
 				e1.printStackTrace();
 			} catch (UtilisateurExistantException e1) {
-				JOptionPane.showMessageDialog(null, "L'utilisateur " + utlilisateur + " existe déjà");
+				JOptionPane.showMessageDialog(null, "L'utilisateur " + utilisateur + " existe déjà");
 				e1.printStackTrace();
 			}
 		}

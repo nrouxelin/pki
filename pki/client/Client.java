@@ -8,7 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -60,7 +63,21 @@ public class Client implements Serializable{
 		}
 	}
 	
-	public Client(){
+	/**
+	 * Constructeur par défaut. initialise annuaire, messagerie et certification à partir des serveurs.
+	 * 
+	 * @throws AccessException
+	 * @throws RemoteException
+	 * @throws NotBoundException
+	 */
+	public Client() throws AccessException, RemoteException, NotBoundException{
+		ServeurCertification c = (ServeurCertification)LocateRegistry.getRegistry().lookup("certification");
+		ServeurAnnuaire a = (ServeurAnnuaire)LocateRegistry.getRegistry().lookup("annuaire");
+		ServeurStockage m = (ServeurStockage)LocateRegistry.getRegistry().lookup("stockage");
+		
+		annuaire = a;
+		messagerie = m;
+		certification = c;
 	}
 
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u){
@@ -220,6 +237,44 @@ public class Client implements Serializable{
 		}
 	}
 	
+	/**
+	 * Connecte l'utilisateur : assigne une personne et un fichier de clef au client
+	 * 
+	 * @param u personne qui sera assigné au client
+	 * @param fichierCles Fichier contennant les clefs 
+	 * @throws NotBoundException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws CertificatNonTrouveException
+	 */
+	public void connexion(Personne u, File fichierCles) 
+			throws NotBoundException, ClassNotFoundException, IOException, CertificatNonTrouveException{
+		
+		utilisateur = u;
+		
+		nomFichierTrousseau = fichierCles.getName();
+		TrousseauCles cles = lireCles(fichierCles);
+		cleLecture = cles.cleLecture;
+		cleSignature = cles.cleSignature;
+		if(cles.anciennesClesLecture != null){
+			anciennesClesLecture = cles.anciennesClesLecture;
+		}else{
+			anciennesClesLecture = new Hashtable<Integer, Key>();
+		}
+		
+		
+		//Teste l'identité
+		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
+		if(verifierIdentite(certificat)){
+			LocalDateTime aujourdhui = LocalDateTime.now();
+			if(aujourdhui.isAfter(certificat.getDateFin())){
+				mettreAJourCertificat(certificat.getId());
+			}
+		}else{
+		//	throw new CertificatNonValideException();
+		}
+	}
+		
 	//getters
 	public Personne getUtilisateur(){
 		return utilisateur;
@@ -229,11 +284,20 @@ public class Client implements Serializable{
 		return annuaire;
 	}
 
+	//setters
+	public void setUtilisateur(Personne u){
+		utilisateur = u;
+	}
+	
 	/**
 	 * Crée un client, lance une fenêtre de connexion et l'affiche.
+	 * 
 	 * @param args
+	 * @throws NotBoundException 
+	 * @throws RemoteException 
+	 * @throws AccessException 
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) throws AccessException, RemoteException, NotBoundException{
 		Client client = new Client();
 		
 		FenetreConnexion fenConnex = new FenetreConnexion(client);
