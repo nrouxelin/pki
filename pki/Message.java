@@ -14,12 +14,26 @@ public class Message implements Serializable {
 	private byte[] cle;
 	private byte[] signature;
 	
+	/**
+	 * Constructeur 
+	 * 
+	 * @param exp l'expéditeur
+	 * @param dest le destinataire
+	 */
 	public Message(Personne exp, Personne dest){
 		expediteur = exp;
 		destinataire = dest;
 		date = LocalDateTime.now();
 	}
 	
+	/**
+	 * Constructeur 
+	 * 
+	 * @param exp l'expéditeur
+	 * @param dest le destinataire
+	 * @param msg le text du message
+	 * @param s la signature
+	 */
 	public Message(Personne exp, Personne dest, byte[] msg, byte[] s){
 		expediteur = exp;
 		destinataire = dest;

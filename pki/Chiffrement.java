@@ -20,6 +20,9 @@ import pki.certification.Certificat;
 
 public final class Chiffrement {
 
+	/**
+	 * @return
+	 */
 	private static Key genererCleBlowfish(){
 		try {
 			KeyGenerator kg = KeyGenerator.getInstance("Blowfish");
@@ -30,6 +33,14 @@ public final class Chiffrement {
 		}
 	}
 	
+	/**
+	 * @param input
+	 * @param cleRSA
+	 * @return
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws InvalidKeyException
+	 */
 	public static byte[] chiffrerRSA(byte[] input, Key cleRSA) throws IllegalBlockSizeException, BadPaddingException, InvalidKeyException{
 		try {
 			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -44,6 +55,14 @@ public final class Chiffrement {
 		
 	}
 	
+	/**
+	 * @param m
+	 * @param texte
+	 * @param cleRSA
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	public static void chiffrerMessage(Message m, String texte, Key cleRSA) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher;
 		try {
@@ -66,6 +85,14 @@ public final class Chiffrement {
 		
 	}
 	
+	/**
+	 * @param cleChiffree
+	 * @param cleRSA
+	 * @return
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	private static Key dechiffrerCleBlowfish(byte[] cleChiffree, Key cleRSA) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher;
 		try {
@@ -79,6 +106,16 @@ public final class Chiffrement {
 		}
 	}
 	
+	/**
+	 * @param texte
+	 * @param cle
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	private static String dechiffrerBlowfish(byte[] texte, Key cle) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
 		cipher.init(Cipher.DECRYPT_MODE, cle);
@@ -87,6 +124,16 @@ public final class Chiffrement {
 		return new String(texteDechiffre);
 	}
 	
+	/**
+	 * @param input
+	 * @param cleRSA
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoSuchPaddingException
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 */
 	public static byte[] dechiffrerRSA(byte[] input, Key cleRSA) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.DECRYPT_MODE, cleRSA);
@@ -94,6 +141,11 @@ public final class Chiffrement {
 		return cipher.doFinal(input);
 	}
 	
+	/**
+	 * @param m
+	 * @param cleRSA
+	 * @return
+	 */
 	public static String dechiffrerMessage(Message m, Key cleRSA){
 		Key cleBlowfish;
 		
@@ -106,6 +158,10 @@ public final class Chiffrement {
 		}
 	}
 	
+	/**
+	 * @param m
+	 * @param cleRSA
+	 */
 	public static void signerMessage(Message m, Key cleRSA){
 		try {
 			byte[] digest = MessageDigest.getInstance("SHA1").digest(m.getMessage());
@@ -116,6 +172,11 @@ public final class Chiffrement {
 	}
 	
 	
+	/**
+	 * @param m
+	 * @param cleRSA
+	 * @return
+	 */
 	public static Boolean verifierSignature(Message m, Key cleRSA){
 		try {
 			byte[] signature = dechiffrerRSA(m.getSignature(),cleRSA);
@@ -127,6 +188,9 @@ public final class Chiffrement {
 		}
 	}
 	
+	/**
+	 * @return
+	 */
 	public static KeyPair genererClesRSA(){
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
@@ -135,26 +199,5 @@ public final class Chiffrement {
 		} catch (NoSuchAlgorithmException e) {
 			return null;
 		}
-	}
-	
-	public static void main(String[] args) throws Exception{
-		Personne destinataire = new Personne("Connard","Jean-Michel");
-		Personne expediteur = new Personne("Gérard","Norbert");
-		
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-	    keyPairGenerator.initialize(1024);
-	    KeyPair keyPair = keyPairGenerator.genKeyPair();
-	    KeyPair cleSignature = keyPairGenerator.generateKeyPair();
-	    
-	    Certificat certificat = new Certificat(destinataire,keyPair.getPublic(),keyPair.getPublic());
-	    
-		Message m = new Message(expediteur,destinataire);
-		Chiffrement.chiffrerMessage(m, "Je m'appelle Jean-Babar",certificat.getCleEcriture());
-		Chiffrement.signerMessage(m, cleSignature.getPublic());
-		
-		System.out.println(new String(m.getMessage()));
-		System.out.println(Chiffrement.dechiffrerMessage(m,keyPair.getPrivate()));
-		System.out.println(Chiffrement.verifierSignature(m, cleSignature.getPrivate()));
-		
 	}
 }

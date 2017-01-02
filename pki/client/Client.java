@@ -37,6 +37,10 @@ import pki.exceptions.UtilisateurExistantException;
 import pki.gui.FenetreConnexion;
 import pki.messagerie.ServeurStockage;
 
+/**
+ * logiciel lanc�  par  l'utilisateur final, permet de communiquer avec les diff�rents serveurs
+ *
+ */
 @SuppressWarnings("serial")
 public class Client implements Serializable{
 
@@ -64,7 +68,8 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * Constructeur par défaut. initialise annuaire, messagerie et certification à partir des serveurs.
+	 * Constructeur par dÃ©faut. 
+	 * Initialise les serveurs d'annuaire, de messagerie et de certification Ã  partir des serveurs.
 	 * 
 	 * @throws AccessException
 	 * @throws RemoteException
@@ -80,13 +85,40 @@ public class Client implements Serializable{
 		certification = c;
 	}
 
+	/**
+	 * Initialise annuaire, messagerie, certification et utilisateur Ã  partir des arguments.
+	 * 
+	 * @param a le serveur d'annuaire
+	 * @param m le serveur de stockage des messages 
+	 * @param c le serveur de certification
+	 * @param u l'utilisateur
+	 */
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u){
-		annuaire = a;
-		messagerie = m;
-		certification = c;
-		utilisateur = u;
+		this.annuaire = a;
+		this.messagerie = m;
+		this.certification = c;
+		this.utilisateur = u;
 	}
 	
+	/**
+	 * Initialise tous les attributs Ã  partir des arguments.
+	 * Utilise le fichier contenant les clefs
+	 * 
+	 * @param a le serveur d'annuaire
+	 * @param m le serveur de stockage des messages 
+	 * @param c le serveur de certification
+	 * @param u l'utilisateur
+	 * @param fichierCles le fichier contenant les clefs
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws CertificatNonTrouveException
+	 * @throws UtilisateurExistantException
+	 * @throws UtilisateurExistantException
+	 * @throws CertificatNonValideException
+	 */
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, File fichierCles)
 			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException,
@@ -103,7 +135,7 @@ public class Client implements Serializable{
 		}
 		
 		
-		//Teste l'identité
+		//Teste l'identitÃ©
 		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
 		if(verifierIdentite(certificat)){
 			LocalDateTime aujourdhui = LocalDateTime.now();
@@ -115,6 +147,25 @@ public class Client implements Serializable{
 		}
 	}
 	
+	/**
+	 * initialise tous les attributs Ã  partir des arguments.
+	 * Utilise le nom du fichier contenant les clefs
+	 * 
+	 * @param a le serveur d'annuaire
+	 * @param m le serveur de stockage des messages 
+	 * @param c le serveur de certification
+	 * @param u l'utilisateur
+	 * @param nomFichierCles le nom du fichier contenant les clefs
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws CertificatNonTrouveException
+	 * @throws UtilisateurExistantException
+	 * @throws UtilisateurExistantException
+	 * @throws CertificatNonValideException
+	 */
 	public Client(ServeurAnnuaire a, ServeurStockage m, ServeurCertification c, Personne u, String nomFichierCles)
 			throws ClassNotFoundException, IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, CertificatNonTrouveException, UtilisateurExistantException, UtilisateurExistantException,
@@ -122,6 +173,16 @@ public class Client implements Serializable{
 		this(a,m,c,u, new File(nomFichierCles));
 	}
 	
+	/**
+	 * Lis la clef contenu dans le fichier
+	 * 
+	 * @param fichier le fichier contenant les clefs
+	 * 
+	 * @return le trousseau de clefs
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
 	private TrousseauCles lireCles(File fichier) throws IOException, ClassNotFoundException{
 		ObjectInputStream flux = new ObjectInputStream(new FileInputStream(fichier));
 		TrousseauCles trousseau = (TrousseauCles) flux.readObject();
@@ -129,6 +190,15 @@ public class Client implements Serializable{
 		return trousseau;
 	}
 	
+	/**
+	 * V�rifie la correspondance entre l'utilisateur et le certificat
+	 * 
+	 * @param c le certificat
+	 * @return vrai si l'identidé correspond à l'utilisateur
+	 * 
+	 * @throws RemoteException
+	 * @throws CertificatNonTrouveException
+	 */
 	private boolean verifierIdentite(Certificat c) throws RemoteException, CertificatNonTrouveException{
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		byte[] signature;
@@ -142,6 +212,19 @@ public class Client implements Serializable{
 		
 	}
 	
+	/**
+	 * Transmet un message au serveur
+	 * 
+	 * @param m le message à envoyer
+	 * @param texte le texte du message à envoyer
+	 * 
+	 * @throws CertificatNonTrouveException
+	 * @throws InvalidKeyException
+	 * @throws IllegalBlockSizeException
+	 * @throws BadPaddingException
+	 * @throws IOException
+	 * @throws CertificatNonValideException
+	 */
 	public void envoyerMessage(Message m, String texte) throws CertificatNonTrouveException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException, CertificatNonValideException{
 		if(utilisateur.equals(m.getExpediteur()) && annuaire.estInscrit(m.getDestinataire())){
 
@@ -153,27 +236,34 @@ public class Client implements Serializable{
 		}
 	}
 	
+	/**
+	 * Met à jour le certificat
+	 * 
+	 * @param id l'id du certificat
+	 * @throws RemoteException
+	 * @throws IOException
+	 */
 	private void mettreAJourCertificat(int id) throws RemoteException, IOException{
 		try {
 			
 			
-			//on enregistre les anciennes clés
+			//on enregistre les anciennes clÃ©s
 			anciennesClesLecture.put(id,cleLecture);
 			
 			certification.revoquerCertificat(id);
-			//On génère la clé d'écriture
+			//On gÃ©nÃ¨re la clÃ© d'Ã©criture
 			KeyPair clesEcriture = Chiffrement.genererClesRSA();
 			cleLecture = clesEcriture.getPrivate();
 					
-			//On génère la clé de signature
+			//On gÃ©nÃ¨re la clÃ© de signature
 			KeyPair clesSignature = Chiffrement.genererClesRSA();
 			cleSignature = clesSignature.getPublic();
 			
-			//Écriture des clés
+			//Ã‰criture des clÃ©s
 			TrousseauCles trousseau = new TrousseauCles(cleLecture,cleSignature,anciennesClesLecture);
 			ecrireCles(trousseau,nomFichierTrousseau);
 					
-			//On génère le certificat et on l'ajoute
+			//On gÃ©nÃ¨re le certificat et on l'ajoute
 			Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 			certification.ajouterCertificat(c);
 		} catch (CertificatNonTrouveException e) {
@@ -184,28 +274,44 @@ public class Client implements Serializable{
 		
 	}
 	
+	/**
+	 * inscrit l'utilisateur
+	 * 
+	 * @param u l'utilisateur à ajouter
+	 * @param nomFichier le nom du fichier contenant les clefs
+	 * @throws UtilisateurExistantException
+	 * @throws IOException
+	 * @throws UtilisateurExistantException
+	 */
 	public void inscrireUtilisateur(Personne u, String nomFichier) throws UtilisateurExistantException, IOException, UtilisateurExistantException{
 		utilisateur = u;
 		
 		annuaire.ajouterPersonne(utilisateur);
 		
-		//On génère la clé d'écriture
+		//On gÃ©nÃ¨re la clÃ© d'Ã©criture
 		KeyPair clesEcriture = Chiffrement.genererClesRSA();
 		cleLecture = clesEcriture.getPrivate();
 		
-		//On génère la clé de signature
+		//On gÃ©nÃ¨re la clÃ© de signature
 		KeyPair clesSignature = Chiffrement.genererClesRSA();
 		cleSignature = clesSignature.getPublic();
 		
-		//Écriture des clés
+		//Ã‰criture des clÃ©s
 		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic(),anciennesClesLecture);
 		ecrireCles(trousseau, nomFichier);
 		
-		//On génère le certificat et on l'ajoute
+		//On gÃ©nÃ¨re le certificat et on l'ajoute
 		Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 		certification.ajouterCertificat(c);
 	}
 	
+	/**
+	 * Enregistre les clefs dans un fichier
+	 * 
+	 * @param trousseau le troussseau de clefs
+	 * @param nomFichier nom du fichier dans lequel les clefs doivent être enregistrées
+	 * @throws IOException
+	 */
 	private void ecrireCles(TrousseauCles trousseau, String nomFichier) throws IOException{		
 		File fichier = new File(nomFichier);
 		
@@ -214,14 +320,16 @@ public class Client implements Serializable{
 		flux.close();
 	}
 	
-	public ArrayList<Message> getMessages() throws RemoteException{
-		return messagerie.getMessages(utilisateur);
-	}
-
-	public int getNbMessages() throws RemoteException{
-		return messagerie.getNbMessages(utilisateur);
-	}
-
+	/**
+	 * D�chiffre un message à l'aide des clefs
+	 * 
+	 * @param m le message à d�chiffrer
+	 * @return le text du message
+	 * @throws CertificatNonTrouveException
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 * @throws CertificatNonValideException
+	 */
 	public String dechiffrerMessage(Message m) throws CertificatNonTrouveException, ClassNotFoundException, IOException, CertificatNonValideException{
 		Certificat certificatExpediteur = certification.getCertificatByPersonneAndDate(m.getExpediteur(),m.getDate());
 		Certificat certificatDestinnataire = certification.getCertificatByPersonneAndDate(utilisateur, m.getDate());
@@ -241,7 +349,7 @@ public class Client implements Serializable{
 	/**
 	 * Connecte l'utilisateur : assigne une personne et un fichier de clef au client
 	 * 
-	 * @param u personne qui sera assigné au client
+	 * @param utilisateur personne qui sera assignÃ© au client
 	 * @param fichierCles Fichier contennant les clefs 
 	 * @throws NotBoundException
 	 * @throws ClassNotFoundException
@@ -249,10 +357,10 @@ public class Client implements Serializable{
 	 * @throws CertificatNonTrouveException
 	 * @throws CertificatNonValideException 
 	 */
-	public void connexion(Personne u, File fichierCles) 
+	public void connexion(Personne utilisateur, File fichierCles) 
 			throws NotBoundException, ClassNotFoundException, IOException, CertificatNonTrouveException, CertificatNonValideException{
 		
-		utilisateur = u;
+		this.utilisateur = utilisateur;
 		
 		nomFichierTrousseau = fichierCles.getName();
 		TrousseauCles cles = lireCles(fichierCles);
@@ -265,7 +373,7 @@ public class Client implements Serializable{
 		}
 		
 		
-		//Teste l'identité
+		//Teste l'identitÃ©
 		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
 		if(verifierIdentite(certificat)){
 			LocalDateTime aujourdhui = LocalDateTime.now();
@@ -278,16 +386,39 @@ public class Client implements Serializable{
 	}
 		
 	//getters
+	
+	/**
+	 * @return
+	 * @throws RemoteException
+	 */
+	public ArrayList<Message> getMessages() throws RemoteException{
+		return messagerie.getMessages(utilisateur);
+	}
+
+	/**
+	 * @return
+	 * @throws RemoteException
+	 */
+	public int getNbMessages() throws RemoteException{
+		return messagerie.getNbMessages(utilisateur);
+	}
+	
+	/**
+	 * @return l'utilisateur associ�    l'instance de Client
+	 */
 	public Personne getUtilisateur(){
 		return utilisateur;
 	}
 	
+	/**
+	 * @return le serveur d'annuaire
+	 */
 	public ServeurAnnuaire getAnnuaire(){
 		return annuaire;
 	}
 	
 	/**
-	 * Crée un client, lance une fenêtre de connexion et l'affiche.
+	 * CrÃ©e un client, lance une fenÃªtre de connexion et l'affiche.
 	 * 
 	 * @param args
 	 * @throws NotBoundException 
