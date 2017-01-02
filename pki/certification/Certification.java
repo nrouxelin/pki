@@ -36,7 +36,7 @@ public class Certification implements Serializable{
 	
 	
 	/**
-	 * 
+	 * Constructeur
 	 */
 	public Certification(){
 
@@ -79,8 +79,10 @@ public class Certification implements Serializable{
 	
 	
 	/**
-	 * @param nom
-	 * @return
+	 * Recherche le certificat correspondant à une personne
+	 * 
+	 * @param p la personne
+	 * @return le certificat correspondant
 	 * @throws CertificatNonTrouveException
 	 */
 	public Certificat getCertificatByPersonne(Personne p) throws CertificatNonTrouveException{
@@ -93,8 +95,10 @@ public class Certification implements Serializable{
 	}
 	
 	/**
-	 * @param id
-	 * @return
+	 * Cherche le certificat correspondant à un id
+	 * 
+	 * @param id l'id du certificat
+	 * @return le certificat correspondant
 	 * @throws CertificatNonTrouveException
 	 */
 	public Certificat getCertificatById(int id) throws CertificatNonTrouveException{
@@ -108,7 +112,9 @@ public class Certification implements Serializable{
 	
 	
 	/**
-	 * @param c
+	 * Ajoute un certificat
+	 * 
+	 * @param c le certificat à ajouter
 	 * @throws UtilisateurExistantException
 	 * @throws IOException 
 	 */
@@ -133,8 +139,11 @@ public class Certification implements Serializable{
 		return false;
 		
 	}
+	
 	/**
-	 * @param c
+	 * Ajoute le certificat aux certificats révoqués
+	 * 
+	 * @param c le certidicat à révoquer
 	 * @throws UtilisateurExistantException
 	 */
 	public boolean ajouterCertificatRevoque(Certificat c)
@@ -158,7 +167,9 @@ public class Certification implements Serializable{
 	
 	
 	/**
-	 * @param id
+	 * Révoque un certificat
+	 * 
+	 * @param id l'id du certificat à révoquer
 	 * @throws CertificatNonTrouveException
 	 * @throws IOException
 	 */
@@ -184,8 +195,10 @@ public class Certification implements Serializable{
 	
 	
 	/**
-	 * @param id
-	 * @param c
+	 * met à jour le certificat
+	 * 
+	 * @param id l'id du certificat
+	 * @param c le nouveau certificat
 	 * @throws CertificatNonTrouveException
 	 * @throws UtilisateurExistantException
 	 * @throws IOException
@@ -202,8 +215,10 @@ public class Certification implements Serializable{
 	}
 	
 	/**
-	 * @param c
-	 * @param actif
+	 * Enregistre un certificat
+	 * 
+	 * @param c le certificat à enregistrer
+	 * @param actif pour savoir si le certificat est actif ou révoqué
 	 * @throws IOException
 	 */
 	public void enregistrerCertificat(Certificat c, boolean actif) throws IOException{
@@ -227,13 +242,19 @@ public class Certification implements Serializable{
 		flux.close();
 	}
 	
+	/**
+	 * @param c le certificat à enregistrer
+	 * @throws IOException
+	 */
 	public void enregistrerCertificat(Certificat c) throws IOException{
 		enregistrerCertificat(c,true);
 	}
 	
 	/**
-	 * @param nomFichier
-	 * @return
+	 * Lis le certificat dans le fichier dans lequel il est stocké
+	 * 
+	 * @param nomFichier le nom du fichier du certificat
+	 * @return le certificat
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -246,8 +267,10 @@ public class Certification implements Serializable{
 	}
 	
 	/**
-	 * @param fichier
-	 * @return
+	 * Lis le certificat dans le fichier dans lequel il est stocké
+	 * 
+	 * @param fichier le fichier du certificat
+	 * @return le certificat
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -258,10 +281,14 @@ public class Certification implements Serializable{
 		return c;
 	}
 	
-	public int getNbCertificats(){
-		return nbCertificats;
-	}
-	
+	/**
+	 * Récupère le certificat correspondant à une personne et à une date
+	 * 
+	 * @param p la personne
+	 * @param date la date
+	 * @return le certificat
+	 * @throws CertificatNonTrouveException
+	 */
 	public Certificat getCertificatByPersonneAndDate(Personne p, LocalDateTime date) throws CertificatNonTrouveException{
 		Certificat actuel = getCertificatByPersonne(p);
 		if(date.isAfter(actuel.getDateDebut()) && actuel.getDateFin().isAfter(date)){
@@ -276,4 +303,10 @@ public class Certification implements Serializable{
 		throw new CertificatNonTrouveException();
 	}
 	
+	/**
+	 * @return
+	 */
+	public int getNbCertificats(){
+		return nbCertificats;
+	}
 }

@@ -15,13 +15,10 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-import pki.annuaire.Personne;
-import pki.certification.Certificat;
-
 public final class Chiffrement {
 
 	/**
-	 * @return
+	 * @return les clefs de chiffrements
 	 */
 	private static Key genererCleBlowfish(){
 		try {
@@ -33,10 +30,12 @@ public final class Chiffrement {
 		}
 	}
 	
-	/**
-	 * @param input
-	 * @param cleRSA
-	 * @return
+	/** 
+	 * chiffre à partir d'une entrée de type byte[]
+	 * 
+	 * @param input entrée non chiffré
+	 * @param cleRSA la clef de cryptage
+	 * @return entrée cryptée
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 * @throws InvalidKeyException
@@ -56,14 +55,18 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param m
-	 * @param texte
-	 * @param cleRSA
+	 * chiffre un message à partir d'une entrée de type String
+	 * assigne le message et la clef Blowfish cryptés à une instance de Message
+	 * 
+	 * @param m l'instance de message auquel sera assigné le texte et la clef chiffrés
+	 * @param texte non chiffré
+	 * @param cleRSA la clef RSA de cryptage
 	 * @throws InvalidKeyException
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 */
-	public static void chiffrerMessage(Message m, String texte, Key cleRSA) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
+	public static void chiffrerMessage(Message m, String texte, Key cleRSA) 
+			throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher;
 		try {
 			Key cleBlowfish = genererCleBlowfish();
@@ -86,14 +89,17 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param cleChiffree
-	 * @param cleRSA
-	 * @return
+	 * Déchiffre une clef pour l'utiliser pour les messages
+	 * 
+	 * @param cleChiffree la clef à déchiffrer
+	 * @param cleRSA la clef de décryptage
+	 * @return clef la clef déchiprée poue les messages
 	 * @throws InvalidKeyException
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 */
-	private static Key dechiffrerCleBlowfish(byte[] cleChiffree, Key cleRSA) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
+	private static Key dechiffrerCleBlowfish(byte[] cleChiffree, Key cleRSA) 
+			throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -107,16 +113,20 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param texte
-	 * @param cle
-	 * @return
+	 * Déchiffre un texte avec Blowfish
+	 * 
+	 * @param texte le texte à déchiffrer
+	 * @param cle la clef pour le ddéchiffrer
+	 * @return le texte déchiffré
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws InvalidKeyException
 	 * @throws IllegalBlockSizeException
 	 * @throws BadPaddingException
 	 */
-	private static String dechiffrerBlowfish(byte[] texte, Key cle) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
+	private static String dechiffrerBlowfish(byte[] texte, Key cle) 
+			throws NoSuchAlgorithmException, NoSuchPaddingException, 
+			InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		Cipher cipher = Cipher.getInstance("Blowfish/ECB/PKCS5Padding");
 		cipher.init(Cipher.DECRYPT_MODE, cle);
 		
@@ -125,9 +135,11 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param input
-	 * @param cleRSA
-	 * @return
+	 * déchiffre avec RSA
+	 * 
+	 * @param input l'entrée à déchiffrer
+	 * @param cleRSA la clef RSA
+	 * @return l'entrée déchiffrée
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 * @throws InvalidKeyException
@@ -142,9 +154,11 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param m
-	 * @param cleRSA
-	 * @return
+	 * Déchiffre le texte d'un message
+	 * 
+	 * @param m le message
+	 * @param cleRSA la clef RSA de déchiffrage
+	 * @return le texte du message déchiffré
 	 */
 	public static String dechiffrerMessage(Message m, Key cleRSA){
 		Key cleBlowfish;
@@ -159,8 +173,10 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @param m
-	 * @param cleRSA
+	 * Signe un message avec une clef RSA
+	 * 
+	 * @param m le message à signer
+	 * @param cleRSA la clef RSA correspondante
 	 */
 	public static void signerMessage(Message m, Key cleRSA){
 		try {
@@ -173,9 +189,11 @@ public final class Chiffrement {
 	
 	
 	/**
-	 * @param m
-	 * @param cleRSA
-	 * @return
+	 * Vérifie la signature d'un message
+	 * 
+	 * @param m le message
+	 * @param cleRSA la clef RSA correspondante
+	 * @return vrai si la signature est correcte, faux sinon
 	 */
 	public static Boolean verifierSignature(Message m, Key cleRSA){
 		try {
@@ -189,7 +207,7 @@ public final class Chiffrement {
 	}
 	
 	/**
-	 * @return
+	 * @return la paire de clef générée
 	 */
 	public static KeyPair genererClesRSA(){
 		try {

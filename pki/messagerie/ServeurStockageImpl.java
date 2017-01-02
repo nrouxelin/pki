@@ -15,6 +15,10 @@ public class ServeurStockageImpl extends UnicastRemoteObject implements ServeurS
 	
 	private Stockage stockage;
 
+	/**
+	 * Constructeur
+	 * @throws RemoteException
+	 */
 	protected ServeurStockageImpl() throws RemoteException {
 		super();
 		stockage = new Stockage("msg/");
@@ -37,6 +41,11 @@ public class ServeurStockageImpl extends UnicastRemoteObject implements ServeurS
 
 	}
 	
+	/**
+	 * Lance le serveur de stockage
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args){
 		try {
 			ServeurStockage serveur = new ServeurStockageImpl();

@@ -26,10 +26,21 @@ public class Stockage implements Serializable {
 	};
 	
 	
+	/**
+	 * Constructeur
+	 * 
+	 * @param nomRepertoire
+	 */
 	public Stockage(String nomRepertoire){
 		this.nomRepertoire = nomRepertoire;
 	}
 	
+	/**
+	 * Enregistre un message
+	 * 
+	 * @param m le message à enregistrer
+	 * @throws IOException
+	 */
 	public void enregistrerMessage(Message m) throws IOException{
 		String folderName = nomRepertoire+m.getDestinataire()+"/";
 		folderName = folderName.replaceAll("\\s","_");
@@ -45,6 +56,14 @@ public class Stockage implements Serializable {
 		flux.close();
 	}
 	
+	/**
+	 * Lis un message 
+	 * 
+	 * @param fichier le fichier dans lequel le message est enregistré
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public Message lireMessage(File fichier) throws ClassNotFoundException, IOException{
 		ObjectInputStream flux = new ObjectInputStream(new FileInputStream(fichier));
 		Message m = (Message) flux.readObject();
@@ -52,6 +71,13 @@ public class Stockage implements Serializable {
 		return m;
 	}
 	
+	/**
+	 * Récupère les messages à destination d'une personne
+	 * @param destinataire le destinataire des messages
+	 * @return les messages vers ce destinataire
+	 * @throws ClassNotFoundException
+	 * @throws IOException
+	 */
 	public ArrayList<Message> getMessages(Personne destinataire) throws ClassNotFoundException, IOException{
 		ArrayList<Message> messages = new ArrayList<Message>();
 		String nomDossier = nomRepertoire+destinataire+"/";
@@ -68,6 +94,11 @@ public class Stockage implements Serializable {
 		return messages;
 	}
 	
+	/**
+	 * Récupère le nombre de message à destination d'une personne 
+	 * @param destinataire le destinataire des messages
+	 * @return le nombre de messages vers ce destinataire
+	 */
 	public int getNbMessages(Personne destinataire){
 		int nb = 0;
 		

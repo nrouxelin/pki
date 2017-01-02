@@ -15,6 +15,10 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 	
 	private Annuaire annuaire;
 	
+	/**
+	 * Constructeur
+	 * @throws RemoteException
+	 */
 	public ServeurAnnuaireImpl() throws RemoteException{
 		super();
 		annuaire = new Annuaire("annuaire.txt");
@@ -57,6 +61,11 @@ public class ServeurAnnuaireImpl extends UnicastRemoteObject implements ServeurA
 	public ArrayList<Personne> getPersonnes() throws RemoteException{
 		return annuaire.getPersonnes();
 	}
+	
+	/**
+	 * Lance le serveur d'annuaire
+	 * @param args
+	 */
 	public static void main(String[] args){
 		try {
 			ServeurAnnuaireImpl serveur = new ServeurAnnuaireImpl();

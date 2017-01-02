@@ -15,7 +15,12 @@ import pki.exceptions.UtilisateurExistantException;
 public class ServeurCertificationImpl extends UnicastRemoteObject implements ServeurCertification {
 	
 	private Certification certification;
-
+	
+	/**
+	 * Constructeur
+	 * 
+	 * @throws RemoteException
+	 */
 	public ServeurCertificationImpl() throws RemoteException{
 		super();
 		certification = new Certification();
@@ -52,6 +57,10 @@ public class ServeurCertificationImpl extends UnicastRemoteObject implements Ser
 	}
 	
 	
+	/**
+	 * Lance le serveur de certification
+	 * @param args
+	 */
 	public static void main(String[] args){
 		try {
 			ServeurCertificationImpl serveur = new ServeurCertificationImpl();

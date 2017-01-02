@@ -38,7 +38,7 @@ import pki.gui.FenetreConnexion;
 import pki.messagerie.ServeurStockage;
 
 /**
- * logiciel lanc�  par  l'utilisateur final, permet de communiquer avec les diff�rents serveurs
+ * logiciel lancé  par  l'utilisateur final, permet de communiquer avec les différents serveurs
  *
  */
 @SuppressWarnings("serial")
@@ -68,8 +68,8 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * Constructeur par dÃ©faut. 
-	 * Initialise les serveurs d'annuaire, de messagerie et de certification Ã  partir des serveurs.
+	 * Constructeur par défaut. 
+	 * Initialise les serveurs d'annuaire, de messagerie et de certification à  partir des serveurs.
 	 * 
 	 * @throws AccessException
 	 * @throws RemoteException
@@ -86,7 +86,7 @@ public class Client implements Serializable{
 	}
 
 	/**
-	 * Initialise annuaire, messagerie, certification et utilisateur Ã  partir des arguments.
+	 * Initialise annuaire, messagerie, certification et utilisateur à  partir des arguments.
 	 * 
 	 * @param a le serveur d'annuaire
 	 * @param m le serveur de stockage des messages 
@@ -101,7 +101,7 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * Initialise tous les attributs Ã  partir des arguments.
+	 * Initialise tous les attributs à  partir des arguments.
 	 * Utilise le fichier contenant les clefs
 	 * 
 	 * @param a le serveur d'annuaire
@@ -135,7 +135,7 @@ public class Client implements Serializable{
 		}
 		
 		
-		//Teste l'identitÃ©
+		//Teste l'identité
 		Certificat certificat = certification.getCertificatByPersonne(utilisateur);
 		if(verifierIdentite(certificat)){
 			LocalDateTime aujourdhui = LocalDateTime.now();
@@ -148,7 +148,7 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * initialise tous les attributs Ã  partir des arguments.
+	 * initialise tous les attributs à  partir des arguments.
 	 * Utilise le nom du fichier contenant les clefs
 	 * 
 	 * @param a le serveur d'annuaire
@@ -191,7 +191,7 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * V�rifie la correspondance entre l'utilisateur et le certificat
+	 * Vérifie la correspondance entre l'utilisateur et le certificat
 	 * 
 	 * @param c le certificat
 	 * @return vrai si l'identidé correspond à l'utilisateur
@@ -247,23 +247,23 @@ public class Client implements Serializable{
 		try {
 			
 			
-			//on enregistre les anciennes clÃ©s
+			//on enregistre les anciennes clés
 			anciennesClesLecture.put(id,cleLecture);
 			
 			certification.revoquerCertificat(id);
-			//On gÃ©nÃ¨re la clÃ© d'Ã©criture
+			//On génère la clÃ© d'écriture
 			KeyPair clesEcriture = Chiffrement.genererClesRSA();
 			cleLecture = clesEcriture.getPrivate();
 					
-			//On gÃ©nÃ¨re la clÃ© de signature
+			//On génère la clé de signature
 			KeyPair clesSignature = Chiffrement.genererClesRSA();
 			cleSignature = clesSignature.getPublic();
 			
-			//Ã‰criture des clÃ©s
+			//écriture des clés
 			TrousseauCles trousseau = new TrousseauCles(cleLecture,cleSignature,anciennesClesLecture);
 			ecrireCles(trousseau,nomFichierTrousseau);
 					
-			//On gÃ©nÃ¨re le certificat et on l'ajoute
+			//On génère le certificat et on l'ajoute
 			Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 			certification.ajouterCertificat(c);
 		} catch (CertificatNonTrouveException e) {
@@ -288,19 +288,19 @@ public class Client implements Serializable{
 		
 		annuaire.ajouterPersonne(utilisateur);
 		
-		//On gÃ©nÃ¨re la clÃ© d'Ã©criture
+		//On génère la clé d'écriture
 		KeyPair clesEcriture = Chiffrement.genererClesRSA();
 		cleLecture = clesEcriture.getPrivate();
 		
-		//On gÃ©nÃ¨re la clÃ© de signature
+		//On génère la clé de signature
 		KeyPair clesSignature = Chiffrement.genererClesRSA();
 		cleSignature = clesSignature.getPublic();
 		
-		//Ã‰criture des clÃ©s
+		//écriture des clés
 		TrousseauCles trousseau = new TrousseauCles(clesEcriture.getPrivate(),clesSignature.getPublic(),anciennesClesLecture);
 		ecrireCles(trousseau, nomFichier);
 		
-		//On gÃ©nÃ¨re le certificat et on l'ajoute
+		//On génère le certificat et on l'ajoute
 		Certificat c = new Certificat(utilisateur, clesSignature.getPrivate(), clesEcriture.getPublic());
 		certification.ajouterCertificat(c);
 	}
@@ -321,9 +321,9 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * D�chiffre un message à l'aide des clefs
+	 * Déchiffre un message à l'aide des clefs
 	 * 
-	 * @param m le message à d�chiffrer
+	 * @param m le message à déchiffrer
 	 * @return le text du message
 	 * @throws CertificatNonTrouveException
 	 * @throws ClassNotFoundException
@@ -349,7 +349,7 @@ public class Client implements Serializable{
 	/**
 	 * Connecte l'utilisateur : assigne une personne et un fichier de clef au client
 	 * 
-	 * @param utilisateur personne qui sera assignÃ© au client
+	 * @param utilisateur personne qui sera assigné au client
 	 * @param fichierCles Fichier contennant les clefs 
 	 * @throws NotBoundException
 	 * @throws ClassNotFoundException
@@ -418,7 +418,7 @@ public class Client implements Serializable{
 	}
 	
 	/**
-	 * CrÃ©e un client, lance une fenÃªtre de connexion et l'affiche.
+	 * Crée un client, lance une fenêtre de connexion et l'affiche.
 	 * 
 	 * @param args
 	 * @throws NotBoundException 

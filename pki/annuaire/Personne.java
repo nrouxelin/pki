@@ -7,15 +7,27 @@ public class Personne implements Serializable {
 	private String prenom;
 	private String nom;
 	
+	/**
+	 * Constructeur
+	 * 
+	 * @param n le nom
+	 * @param p le prénom
+	 */
 	public Personne(String n, String p){
 		prenom = p;
 		nom = n;
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getNom(){
 		return nom;
 	}
 	
+	/**
+	 * @return
+	 */
 	public String getPrenom(){
 		return prenom;
 	}

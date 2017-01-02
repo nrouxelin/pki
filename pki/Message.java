@@ -17,7 +17,7 @@ public class Message implements Serializable {
 	/**
 	 * Constructeur 
 	 * 
-	 * @param exp l'expéditeur
+	 * @param exp l'expï¿½diteur
 	 * @param dest le destinataire
 	 */
 	public Message(Personne exp, Personne dest){
@@ -29,7 +29,7 @@ public class Message implements Serializable {
 	/**
 	 * Constructeur 
 	 * 
-	 * @param exp l'expéditeur
+	 * @param exp l'expï¿½diteur
 	 * @param dest le destinataire
 	 * @param msg le text du message
 	 * @param s la signature
@@ -42,38 +42,65 @@ public class Message implements Serializable {
 		signature = s;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Personne getExpediteur(){
 		return expediteur;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Personne getDestinataire(){
 		return destinataire;
 	}
 	
+	/**
+	 * @return
+	 */
 	public LocalDateTime getDate(){
 		return date;
 	}
 	
+	/**
+	 * @return
+	 */
 	public byte[] getMessage(){
 		return message;
 	}
 	
+	/**
+	 * @return
+	 */
 	public byte[] getSignature(){
 		return signature;
 	}
 	
+	/**
+	 * @param msg
+	 */
 	public void setMessage(byte[] msg){
 		message = msg;
 	}
 	
+	/**
+	 * @param s
+	 */
 	public void setSignature(byte[] s){
 		signature = s;
 	}
 	
+	/**
+	 * @param k
+	 */
 	public void setCle(byte[] k){
 		cle = k;
 	}
 	
+	/**
+	 * @return
+	 */
 	public byte[] getCle(){
 		return cle;
 	}

@@ -19,8 +19,9 @@ public class Certificat implements Serializable{
 	private boolean idModifie;
 	
 	
-	//Constructeur
 	/**
+	 * Constructeur
+	 * 
 	 * @param nom Nom de la personne
 	 * @param cleSignature clé publique pour déchiffrer la signature
 	 * @param cleEcriture clé publique pour chiffrer les messages
@@ -38,23 +39,44 @@ public class Certificat implements Serializable{
 	}
 	
 	//Getters
+	/**
+	 * @return
+	 */
 	public Personne getPersonne(){
 		return personne;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Key getCleEcriture(){
 		return cleEcriture;
 	}
 	
+	/**
+	 * @return
+	 */
 	public Key getCleSignature(){
 		return cleSignature;
 	}
+	
+	/**
+	 * @return
+	 */
 	public LocalDateTime getDateFin(){
 		return dateFin;
 	}
+	
+	/**
+	 * @return
+	 */
 	public LocalDateTime getDateDebut(){
 		return dateDebut;
 	}
+	
+	/**
+	 * @return
+	 */
 	public int getId(){
 		return id;
 	}
@@ -63,6 +85,9 @@ public class Certificat implements Serializable{
 		return "Id:"+id+" : "+personne;
 	}
 	
+	/**
+	 * @param id
+	 */
 	public void setId(int id){
 		if(!idModifie){
 			this.id = id;
@@ -70,6 +95,9 @@ public class Certificat implements Serializable{
 		}
 	}
 	
+	/**
+	 * @param date
+	 */
 	public void setDateFin(LocalDateTime date){
 		dateFin = date;
 	}
