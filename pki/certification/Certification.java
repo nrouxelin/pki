@@ -5,6 +5,7 @@ package pki.certification;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -45,9 +46,14 @@ public class Certification implements Serializable{
 		nbCertificats = 0;
 		initialisation = true;
 		
+		
 		//Lecture des certificats actifs
 				try{
 				File repertoire = new File("certificats/actifs/");
+				//On vérifie que les dossiers nécessaires existent, si besoin on les créée
+				if(!(repertoire.exists() && repertoire.isDirectory())){
+					repertoire.mkdirs();
+				}
 				File[] actifs = repertoire.listFiles(filtreExtension);
 				for(File f : actifs){
 					Certificat c = lireCertificat(f);
@@ -64,6 +70,10 @@ public class Certification implements Serializable{
 				}
 				//Lecture des certificats revoqués
 				File repertoire = new File("certificats/revoques/");
+				//On vérifie que les dossiers nécessaires existent, si besoin on les créée
+				if(!(repertoire.exists() && repertoire.isDirectory())){
+					repertoire.mkdirs();
+				}
 				File[] revoques = repertoire.listFiles();
 				for(File f : revoques){
 					try {
