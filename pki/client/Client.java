@@ -86,6 +86,24 @@ public class Client implements Serializable{
 	}
 
 	/**
+	 * Initialise les serveurs d'annuaire, de messagerie et de certification à  partir des serveurs.
+	 * 
+	 * @param arg l'emplacement des serveurs
+	 * @throws AccessException
+	 * @throws RemoteException
+	 * @throws NotBoundException
+	 */
+	public Client(String arg) throws AccessException, RemoteException, NotBoundException{
+		ServeurCertification c = (ServeurCertification)LocateRegistry.getRegistry(arg).lookup("certification");
+		ServeurAnnuaire a = (ServeurAnnuaire)LocateRegistry.getRegistry(arg).lookup("annuaire");
+		ServeurStockage m = (ServeurStockage)LocateRegistry.getRegistry(arg).lookup("stockage");
+		
+		annuaire = a;
+		messagerie = m;
+		certification = c;
+	}
+
+	/**
 	 * Initialise annuaire, messagerie, certification et utilisateur à  partir des arguments.
 	 * 
 	 * @param a le serveur d'annuaire
@@ -420,13 +438,19 @@ public class Client implements Serializable{
 	/**
 	 * Crée un client, lance une fenêtre de connexion et l'affiche.
 	 * 
-	 * @param args
+	 * @param args l'emplacement des serveurs
 	 * @throws NotBoundException 
 	 * @throws RemoteException 
 	 * @throws AccessException 
 	 */
 	public static void main(String[] args) throws AccessException, RemoteException, NotBoundException{
-		Client client = new Client();
+		
+		Client client;
+		
+		if(args.length > 0)
+			client = new Client(args[0]);
+		else
+			client = new Client();
 		
 		FenetreConnexion fenConnex = new FenetreConnexion(client);
 		fenConnex.setVisible(true);
